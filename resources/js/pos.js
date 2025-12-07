@@ -118,11 +118,13 @@ export function erpPosTerminal(options) {
         },
 
         async fetchProducts() {
+            // Validation: minimum search length
             if (!this.search || this.search.length < 2) {
                 this.products = [];
                 return;
             }
 
+            // Check online status
             if (!window.navigator.onLine) {
                 this.message = {
                     type: 'info',
@@ -131,31 +133,62 @@ export function erpPosTerminal(options) {
                 return;
             }
 
+            // Prevent concurrent searches
+            if (this.isSearching) {
+                return;
+            }
+
             this.isSearching = true;
             this.products = [];
+            this.clearMessage();
 
             try {
                 const response = await window.axios.get(`/api/v1/branches/${this.branchId}/products/search`, {
                     params: { q: this.search },
+                    timeout: 10000, // 10 second timeout
                 });
 
                 let data = response.data;
 
-                // Accept multiple possible API shapes: {data:[...]}, {data:{data:[...]}}, or plain array
-                if (Array.isArray(data)) {
+                // Handle standardized API response format
+                if (data && data.success === true && Array.isArray(data.data)) {
+                    this.products = data.data;
+                } else if (Array.isArray(data)) {
+                    // Fallback for direct array response
                     this.products = data;
                 } else if (data && Array.isArray(data.data)) {
+                    // Fallback for nested data
                     this.products = data.data;
-                } else if (data && data.data && Array.isArray(data.data.data)) {
-                    this.products = data.data.data;
                 } else {
                     this.products = [];
+                    console.warn('Unexpected API response format:', data);
                 }
             } catch (error) {
                 console.error('POS search error', error);
+                
+                // Handle specific error types
+                let errorMessage = 'حدث خطأ أثناء البحث عن المنتجات.';
+                if (error.code === 'ECONNABORTED') {
+                    errorMessage = 'انتهت مهلة الطلب. يرجى المحاولة مرة أخرى.';
+                } else if (error.response) {
+                    // Server responded with error
+                    if (error.response.status === 401) {
+                        errorMessage = 'انتهت الجلسة. يرجى تسجيل الدخول مرة أخرى.';
+                    } else if (error.response.status === 403) {
+                        errorMessage = 'ليس لديك صلاحية للبحث عن المنتجات.';
+                    } else if (error.response.status >= 500) {
+                        errorMessage = 'خطأ في الخادم. يرجى المحاولة لاحقاً.';
+                    } else if (error.response.data?.message) {
+                        errorMessage = error.response.data.message;
+                    }
+                } else if (error.request) {
+                    // Request made but no response
+                    errorMessage = 'لا يمكن الاتصال بالخادم. يرجى التحقق من الاتصال.';
+                }
+
                 this.message = {
                     type: 'error',
-                    text: error?.response?.data?.message ?? 'حدث خطأ أثناء البحث عن المنتجات.',
+                    text: errorMessage,
                 };
             } finally {
                 this.isSearching = false;
@@ -203,8 +236,23 @@ export function erpPosTerminal(options) {
             if (index < 0 || index >= this.cart.length) {
                 return;
             }
+            
+            // Parse and validate quantity
             const value = Number(qty ?? 0);
-            this.cart[index].qty = value > 0 ? value : 1;
+            
+            // Ensure positive quantity, minimum 0.01, maximum 999999
+            if (isNaN(value) || value <= 0) {
+                this.cart[index].qty = 1;
+            } else if (value > 999999) {
+                this.cart[index].qty = 999999;
+                this.message = {
+                    type: 'warning',
+                    text: 'الكمية القصوى المسموح بها هي 999999.',
+                };
+            } else {
+                this.cart[index].qty = value;
+            }
+            
             this.persistCart();
         },
 
@@ -212,8 +260,24 @@ export function erpPosTerminal(options) {
             if (index < 0 || index >= this.cart.length) {
                 return;
             }
+            
+            // Parse and validate price
             const value = Number(price ?? 0);
-            this.cart[index].price = value >= 0 ? value : 0;
+            
+            // Ensure non-negative price, maximum 9999999.99
+            if (isNaN(value) || value < 0) {
+                this.cart[index].price = 0;
+            } else if (value > 9999999.99) {
+                this.cart[index].price = 9999999.99;
+                this.message = {
+                    type: 'warning',
+                    text: 'السعر القصوى المسموح به هو 9999999.99.',
+                };
+            } else {
+                // Round to 2 decimal places
+                this.cart[index].price = Math.round(value * 100) / 100;
+            }
+            
             this.persistCart();
         },
 
@@ -229,10 +293,26 @@ export function erpPosTerminal(options) {
         },
 
         async checkout() {
+            // Validation: check cart has items
             if (!this.cart.length) {
                 this.message = {
                     type: 'info',
                     text: 'لا توجد عناصر في السلة.',
+                };
+                return;
+            }
+
+            // Prevent double submit
+            if (this.isCheckingOut) {
+                return;
+            }
+
+            // Validate cart items
+            const invalidItems = this.cart.filter(item => !item.product_id || Number(item.qty) <= 0);
+            if (invalidItems.length > 0) {
+                this.message = {
+                    type: 'error',
+                    text: 'بعض العناصر في السلة غير صالحة. يرجى التحقق من الكميات.',
                 };
                 return;
             }
@@ -257,7 +337,7 @@ export function erpPosTerminal(options) {
                 this.persistCart();
                 this.message = {
                     type: 'info',
-                    text: 'تم حفظ الطلب في وضع عدم الاتصال. سيتم مزامنته عند توفر الإنترنت (Skeleton).',
+                    text: 'تم حفظ الطلب في وضع عدم الاتصال. سيتم مزامنته عند توفر الإنترنت.',
                 };
                 return;
             }
@@ -266,12 +346,23 @@ export function erpPosTerminal(options) {
             this.clearMessage();
 
             try {
-                const response = await window.axios.post(`/api/v1/branches/${this.branchId}/pos/checkout`, payload);
+                const response = await window.axios.post(`/api/v1/branches/${this.branchId}/pos/checkout`, payload, {
+                    timeout: 15000, // 15 second timeout for checkout
+                });
 
-                // Try to extract a user-friendly message
+                // Extract message from standardized API response
                 const data = response.data ?? {};
-                let msg = data.message ?? data.status ?? 'تم تنفيذ عملية البيع بنجاح.';
+                let msg = 'تم تنفيذ عملية البيع بنجاح.';
+                
+                if (data.success === true && data.message) {
+                    msg = data.message;
+                } else if (data.message) {
+                    msg = data.message;
+                } else if (data.status) {
+                    msg = data.status;
+                }
 
+                // Clear cart on success
                 this.cart = [];
                 this.persistCart();
 
@@ -279,11 +370,45 @@ export function erpPosTerminal(options) {
                     type: 'success',
                     text: msg,
                 };
+
+                // Optional: Show sale details if available
+                if (data.data && data.data.code) {
+                    console.log('Sale created:', data.data.code);
+                }
             } catch (error) {
                 console.error('POS checkout error', error);
+                
+                // Handle specific error types
+                let errorMessage = 'فشل تنفيذ عملية البيع.';
+                if (error.code === 'ECONNABORTED') {
+                    errorMessage = 'انتهت مهلة الطلب. يرجى المحاولة مرة أخرى.';
+                } else if (error.response) {
+                    // Server responded with error
+                    if (error.response.status === 401) {
+                        errorMessage = 'انتهت الجلسة. يرجى تسجيل الدخول مرة أخرى.';
+                    } else if (error.response.status === 403) {
+                        errorMessage = 'ليس لديك صلاحية لإجراء عمليات البيع.';
+                    } else if (error.response.status === 422) {
+                        // Validation error
+                        if (error.response.data?.errors) {
+                            const errors = Object.values(error.response.data.errors).flat();
+                            errorMessage = errors.join(' ');
+                        } else if (error.response.data?.message) {
+                            errorMessage = error.response.data.message;
+                        }
+                    } else if (error.response.status >= 500) {
+                        errorMessage = 'خطأ في الخادم. يرجى المحاولة لاحقاً.';
+                    } else if (error.response.data?.message) {
+                        errorMessage = error.response.data.message;
+                    }
+                } else if (error.request) {
+                    // Request made but no response
+                    errorMessage = 'لا يمكن الاتصال بالخادم. يرجى التحقق من الاتصال.';
+                }
+
                 this.message = {
                     type: 'error',
-                    text: error?.response?.data?.message ?? 'فشل تنفيذ عملية البيع.',
+                    text: errorMessage,
                 };
             } finally {
                 this.isCheckingOut = false;

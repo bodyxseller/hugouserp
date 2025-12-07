@@ -16,27 +16,42 @@ class POSController extends Controller
         protected POSService $posService
     ) {}
 
-    public function checkout(Request $request): JsonResponse
+    public function checkout(Request $request, ?int $branchId = null): JsonResponse
     {
         $this->authorize('pos.use');
 
-        $request->validate([
-            'branch_id' => 'required|integer|exists:branches,id',
+        // Use branchId from route if provided, otherwise require it in request
+        $validationRules = [
             'items' => 'required|array|min:1',
             'items.*.product_id' => 'required|integer|exists:products,id',
             'items.*.qty' => 'required|numeric|min:0.01',
             'items.*.price' => 'nullable|numeric|min:0',
             'items.*.discount' => 'nullable|numeric|min:0|max:100',
+            'items.*.percent' => 'nullable|boolean',
+            'items.*.tax_id' => 'nullable|integer|exists:taxes,id',
             'payments' => 'nullable|array',
             'payments.*.method' => 'required_with:payments|in:cash,card,transfer,cheque',
             'payments.*.amount' => 'required_with:payments|numeric|min:0.01',
             'customer_id' => 'nullable|integer|exists:customers,id',
             'warehouse_id' => 'nullable|integer|exists:warehouses,id',
             'notes' => 'nullable|string|max:1000',
-        ]);
+        ];
+
+        // If branchId not in route, require it in request body
+        if (!$branchId) {
+            $validationRules['branch_id'] = 'required|integer|exists:branches,id';
+        }
+
+        $request->validate($validationRules);
+
+        // Merge branchId into request data
+        $checkoutData = $request->all();
+        if ($branchId) {
+            $checkoutData['branch_id'] = $branchId;
+        }
 
         try {
-            $sale = $this->posService->checkout($request->all());
+            $sale = $this->posService->checkout($checkoutData);
 
             return response()->json([
                 'success' => true,

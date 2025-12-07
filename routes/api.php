@@ -19,6 +19,18 @@ Route::prefix('v1')->group(function () {
         ]);
     });
 
+    // Branch-scoped POS routes (for frontend POS terminal)
+    Route::prefix('branches/{branchId}')->middleware(['auth:sanctum', 'throttle:api'])->group(function () {
+        Route::prefix('pos')->group(function () {
+            Route::post('/checkout', [POSController::class, 'checkout']);
+        });
+
+        Route::prefix('products')->group(function () {
+            Route::get('/search', [ProductsController::class, 'search']);
+        });
+    });
+
+    // Global POS session management routes
     Route::prefix('pos')->middleware(['auth:sanctum', 'throttle:api'])->group(function () {
         Route::post('/checkout', [POSController::class, 'checkout']);
         Route::get('/session', [POSController::class, 'getCurrentSession']);

@@ -11,6 +11,50 @@ use Illuminate\Http\Request;
 
 class ProductsController extends BaseApiController
 {
+    /**
+     * Search products by name, SKU, or barcode for POS terminal.
+     * This endpoint is used by the frontend POS system.
+     */
+    public function search(Request $request, ?int $branchId = null): JsonResponse
+    {
+        $query = $request->get('q', '');
+        
+        if (strlen($query) < 2) {
+            return $this->successResponse([], __('Search query too short'));
+        }
+
+        $products = Product::query()
+            ->when($branchId, fn ($q) => $q->where('branch_id', $branchId))
+            ->when(!$branchId && auth()->user()?->branch_id, fn ($q) => $q->where('branch_id', auth()->user()->branch_id))
+            ->where(function ($q) use ($query) {
+                $q->where('name', 'like', '%' . $query . '%')
+                    ->orWhere('sku', 'like', '%' . $query . '%')
+                    ->orWhere('barcode', 'like', '%' . $query . '%');
+            })
+            ->where('status', 'active')
+            ->select('id', 'name', 'sku', 'price', 'quantity', 'barcode', 'category_id', 'tax_id')
+            ->limit(50)
+            ->get();
+
+        // Format response to match frontend expectations
+        $formattedProducts = $products->map(function ($product) {
+            return [
+                'id' => $product->id,
+                'product_id' => $product->id, // Frontend expects both
+                'name' => $product->name,
+                'label' => $product->name, // Frontend fallback
+                'sku' => $product->sku,
+                'price' => (float) $product->price,
+                'sale_price' => (float) $product->price, // Frontend fallback
+                'quantity' => (int) $product->quantity,
+                'barcode' => $product->barcode,
+                'tax_id' => $product->tax_id,
+            ];
+        });
+
+        return $this->successResponse($formattedProducts, __('Products found'));
+    }
+
     public function index(Request $request): JsonResponse
     {
         $store = $this->getStore($request);
