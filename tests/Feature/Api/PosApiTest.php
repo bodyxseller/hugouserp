@@ -16,6 +16,7 @@ class PosApiTest extends TestCase
     use RefreshDatabase;
 
     protected User $user;
+
     protected Branch $branch;
 
     protected function setUp(): void
@@ -47,7 +48,7 @@ class PosApiTest extends TestCase
 
         // Should not return 404 (route exists)
         $this->assertNotEquals(404, $response->status());
-        
+
         // Most likely will return 403 (forbidden) since we don't have permissions seeded
         // or 200 if it works
         $this->assertContains($response->status(), [200, 403]);
@@ -89,7 +90,7 @@ class PosApiTest extends TestCase
 
         // Route should exist (not 404)
         $this->assertNotEquals(404, $response->status());
-        
+
         // Should either fail with validation/permission (422, 403)
         // or succeed (201) depending on setup
         $this->assertContains($response->status(), [201, 422, 403]);

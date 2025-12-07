@@ -18,18 +18,18 @@ class ProductsController extends BaseApiController
     public function search(Request $request, ?int $branchId = null): JsonResponse
     {
         $query = $request->get('q', '');
-        
+
         if (strlen($query) < 2) {
             return $this->successResponse([], __('Search query too short'));
         }
 
         $products = Product::query()
             ->when($branchId, fn ($q) => $q->where('branch_id', $branchId))
-            ->when(!$branchId && auth()->user()?->branch_id, fn ($q) => $q->where('branch_id', auth()->user()->branch_id))
+            ->when(! $branchId && auth()->user()?->branch_id, fn ($q) => $q->where('branch_id', auth()->user()->branch_id))
             ->where(function ($q) use ($query) {
-                $q->where('name', 'like', '%' . $query . '%')
-                    ->orWhere('sku', 'like', '%' . $query . '%')
-                    ->orWhere('barcode', 'like', '%' . $query . '%');
+                $q->where('name', 'like', '%'.$query.'%')
+                    ->orWhere('sku', 'like', '%'.$query.'%')
+                    ->orWhere('barcode', 'like', '%'.$query.'%');
             })
             ->where('status', 'active')
             ->select('id', 'name', 'sku', 'price', 'quantity', 'barcode', 'category_id', 'tax_id')

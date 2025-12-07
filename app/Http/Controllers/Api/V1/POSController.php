@@ -38,7 +38,7 @@ class POSController extends Controller
         ];
 
         // If branchId not in route, require it in request body
-        if (!$branchId) {
+        if (! $branchId) {
             $validationRules['branch_id'] = 'required|integer|exists:branches,id';
         }
 

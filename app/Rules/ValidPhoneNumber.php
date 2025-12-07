@@ -9,7 +9,7 @@ use Illuminate\Contracts\Validation\ValidationRule;
 
 /**
  * Validates phone numbers with international format support
- * 
+ *
  * Accepts formats:
  * - +1234567890
  * - (123) 456-7890
@@ -35,6 +35,7 @@ class ValidPhoneNumber implements ValidationRule
         // Check if it starts with + for international format
         if ($this->requireInternationalFormat && ! str_starts_with($cleanValue, '+')) {
             $fail(__('The :attribute must be in international format starting with +'));
+
             return;
         }
 
@@ -44,6 +45,7 @@ class ValidPhoneNumber implements ValidationRule
         // Check if only digits remain
         if (! ctype_digit($digitsOnly)) {
             $fail(__('The :attribute must contain only numbers and valid separators'));
+
             return;
         }
 
@@ -51,6 +53,7 @@ class ValidPhoneNumber implements ValidationRule
         $length = strlen($digitsOnly);
         if ($length < 7 || $length > 15) {
             $fail(__('The :attribute must be between 7 and 15 digits'));
+
             return;
         }
     }

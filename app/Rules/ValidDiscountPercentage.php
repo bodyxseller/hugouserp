@@ -9,7 +9,7 @@ use Illuminate\Contracts\Validation\ValidationRule;
 
 /**
  * Validates discount percentages
- * 
+ *
  * Features:
  * - Range validation (0-100%)
  * - Decimal precision control
@@ -31,6 +31,7 @@ class ValidDiscountPercentage implements ValidationRule
         // Check if numeric
         if (! is_numeric($value)) {
             $fail(__('The :attribute must be a number'));
+
             return;
         }
 
@@ -39,12 +40,14 @@ class ValidDiscountPercentage implements ValidationRule
         // Check if negative
         if ($discount < 0) {
             $fail(__('The :attribute cannot be negative'));
+
             return;
         }
 
         // Check maximum
         if ($discount > $this->maxDiscount) {
             $fail(__('The :attribute cannot exceed :max%', ['max' => number_format($this->maxDiscount, 0)]));
+
             return;
         }
 
@@ -52,6 +55,7 @@ class ValidDiscountPercentage implements ValidationRule
         $parts = explode('.', (string) $value);
         if (isset($parts[1]) && strlen($parts[1]) > $this->decimalPlaces) {
             $fail(__('The :attribute cannot have more than :places decimal places', ['places' => $this->decimalPlaces]));
+
             return;
         }
     }

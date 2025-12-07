@@ -8,7 +8,7 @@ use Illuminate\Support\Str;
 
 /**
  * UI Helper Service
- * 
+ *
  * Provides utility methods for consistent UI/UX across the application
  */
 class UIHelperService
@@ -23,13 +23,13 @@ class UIHelperService
         $accumulated = '';
 
         foreach ($parts as $index => $part) {
-            $accumulated .= ($accumulated ? '.' : '') . $part;
-            
+            $accumulated .= ($accumulated ? '.' : '').$part;
+
             $label = Str::title(str_replace(['-', '_'], ' ', $part));
-            
+
             // Skip if it's a CRUD action
             if (in_array($part, ['index', 'create', 'edit', 'show'], true)) {
-                $label = match($part) {
+                $label = match ($part) {
                     'index' => __('List'),
                     'create' => __('Create'),
                     'edit' => __('Edit'),
@@ -37,7 +37,7 @@ class UIHelperService
                     default => $label
                 };
             }
-            
+
             $breadcrumbs[] = [
                 'label' => __($label),
                 'url' => $index === count($parts) - 1 ? null : route($accumulated, $parameters),
@@ -53,7 +53,7 @@ class UIHelperService
      */
     public function getStatusBadgeClass(string $status): string
     {
-        return match(strtolower($status)) {
+        return match (strtolower($status)) {
             'active', 'completed', 'paid', 'approved', 'confirmed' => 'bg-emerald-100 text-emerald-700 border-emerald-200',
             'inactive', 'cancelled', 'rejected', 'void' => 'bg-gray-100 text-gray-700 border-gray-200',
             'pending', 'processing', 'in_progress' => 'bg-amber-100 text-amber-700 border-amber-200',
@@ -83,9 +83,10 @@ class UIHelperService
         if ($showSymbol) {
             // RTL currencies go after the number
             if (in_array($currency, ['SAR', 'AED', 'EGP'], true)) {
-                return $formatted . ' ' . $symbol;
+                return $formatted.' '.$symbol;
             }
-            return $symbol . ' ' . $formatted;
+
+            return $symbol.' '.$formatted;
         }
 
         return $formatted;
@@ -136,19 +137,19 @@ class UIHelperService
      */
     public function formatDateRange(?string $start, ?string $end): string
     {
-        if (!$start && !$end) {
+        if (! $start && ! $end) {
             return __('All time');
         }
 
-        if ($start && !$end) {
+        if ($start && ! $end) {
             return __('From :date', ['date' => date('M d, Y', strtotime($start))]);
         }
 
-        if (!$start && $end) {
+        if (! $start && $end) {
             return __('Until :date', ['date' => date('M d, Y', strtotime($end))]);
         }
 
-        return date('M d, Y', strtotime($start)) . ' - ' . date('M d, Y', strtotime($end));
+        return date('M d, Y', strtotime($start)).' - '.date('M d, Y', strtotime($end));
     }
 
     /**
@@ -169,20 +170,20 @@ class UIHelperService
     public function formatBytes(int $bytes, int $precision = 2): string
     {
         $units = ['B', 'KB', 'MB', 'GB', 'TB'];
-        
+
         if ($bytes === 0) {
             return '0 B';
         }
 
         $i = 0;
         $value = $bytes;
-        
+
         while ($value > 1024 && $i < count($units) - 1) {
             $value = $value / 1024.0;
             $i++;
         }
 
-        return round($value, $precision) . ' ' . $units[$i];
+        return round($value, $precision).' '.$units[$i];
     }
 
     /**
@@ -196,6 +197,7 @@ class UIHelperService
             $safeValue = htmlspecialchars(is_array($value) ? json_encode($value) : $value, ENT_QUOTES, 'UTF-8');
             $attributes[] = "data-{$safeKey}=\"{$safeValue}\"";
         }
+
         return implode(' ', $attributes);
     }
 
@@ -208,6 +210,6 @@ class UIHelperService
             return $text;
         }
 
-        return rtrim(mb_substr($text, 0, $length - mb_strlen($ending))) . $ending;
+        return rtrim(mb_substr($text, 0, $length - mb_strlen($ending))).$ending;
     }
 }

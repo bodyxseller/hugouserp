@@ -14,7 +14,7 @@ class UIHelperServiceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->service = new UIHelperService();
+        $this->service = new UIHelperService;
     }
 
     /** @test */
@@ -31,10 +31,10 @@ class UIHelperServiceTest extends TestCase
     {
         $activeClass = $this->service->getStatusBadgeClass('active');
         $this->assertStringContainsString('emerald', $activeClass);
-        
+
         $inactiveClass = $this->service->getStatusBadgeClass('inactive');
         $this->assertStringContainsString('gray', $inactiveClass);
-        
+
         $pendingClass = $this->service->getStatusBadgeClass('pending');
         $this->assertStringContainsString('amber', $pendingClass);
     }
@@ -45,7 +45,7 @@ class UIHelperServiceTest extends TestCase
         $formatted = $this->service->formatCurrency(1234.56, 'USD');
         $this->assertStringContainsString('1,234.56', $formatted);
         $this->assertStringContainsString('$', $formatted);
-        
+
         $formatted = $this->service->formatCurrency(1234.56, 'EUR');
         $this->assertStringContainsString('€', $formatted);
     }
@@ -63,10 +63,10 @@ class UIHelperServiceTest extends TestCase
     {
         $color1 = $this->service->getAvatarColor('John Doe');
         $color2 = $this->service->getAvatarColor('Jane Smith');
-        
+
         $this->assertStringStartsWith('bg-', $color1);
         $this->assertStringStartsWith('bg-', $color2);
-        
+
         // Same name should give same color
         $this->assertEquals(
             $this->service->getAvatarColor('John Doe'),
@@ -89,7 +89,7 @@ class UIHelperServiceTest extends TestCase
     {
         $text = 'This is a very long text that needs to be truncated';
         $truncated = $this->service->truncate($text, 20);
-        
+
         $this->assertLessThanOrEqual(20, mb_strlen($truncated));
         $this->assertStringEndsWith('...', $truncated);
     }
@@ -99,7 +99,7 @@ class UIHelperServiceTest extends TestCase
     {
         $text = 'Short text';
         $truncated = $this->service->truncate($text, 20);
-        
+
         $this->assertEquals($text, $truncated);
         $this->assertStringEndsNotWith('...', $truncated);
     }
@@ -108,7 +108,7 @@ class UIHelperServiceTest extends TestCase
     public function it_formats_pagination_summary(): void
     {
         $summary = $this->service->getPaginationSummary(1, 15, 100);
-        
+
         $this->assertStringContainsString('1', $summary);
         $this->assertStringContainsString('15', $summary);
         $this->assertStringContainsString('100', $summary);
@@ -121,9 +121,9 @@ class UIHelperServiceTest extends TestCase
             'id' => '123',
             'name' => 'Test Name',
         ];
-        
+
         $attributes = $this->service->dataAttributes($data);
-        
+
         $this->assertStringContainsString('data-id="123"', $attributes);
         $this->assertStringContainsString('data-name="Test Name"', $attributes);
     }
@@ -134,9 +134,9 @@ class UIHelperServiceTest extends TestCase
         $data = [
             'value' => '<script>alert("xss")</script>',
         ];
-        
+
         $attributes = $this->service->dataAttributes($data);
-        
+
         $this->assertStringNotContainsString('<script>', $attributes);
         $this->assertStringContainsString('&lt;', $attributes);
     }
