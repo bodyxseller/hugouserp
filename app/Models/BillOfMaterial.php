@@ -87,13 +87,13 @@ class BillOfMaterial extends BaseModel
             $productCost = $item->product->cost ?? 0.0;
             $itemQuantity = (float) $item->quantity;
             $scrapFactor = 1 + ((float) $item->scrap_percentage / 100);
-            
+
             $cost += $productCost * $itemQuantity * $scrapFactor;
         }
 
         // Apply BOM-level scrap
         $bomScrapFactor = 1 + ((float) $this->scrap_percentage / 100);
-        
+
         return $cost * $bomScrapFactor;
     }
 
@@ -105,6 +105,7 @@ class BillOfMaterial extends BaseModel
         return $this->operations->sum(function ($operation) {
             $durationHours = (float) $operation->duration_minutes / 60;
             $costPerHour = (float) $operation->workCenter->cost_per_hour;
+
             return $durationHours * $costPerHour + (float) $operation->labor_cost;
         });
     }
@@ -140,7 +141,7 @@ class BillOfMaterial extends BaseModel
     {
         $prefix = 'BOM';
         $date = now()->format('Ym');
-        
+
         $lastBom = static::where('branch_id', $branchId)
             ->where('bom_number', 'like', "{$prefix}-{$date}-%")
             ->orderByDesc('id')

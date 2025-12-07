@@ -6,13 +6,13 @@ namespace App\Services;
 
 use App\Models\Account;
 use App\Models\AccountMapping;
+use App\Models\FiscalPeriod;
 use App\Models\JournalEntry;
 use App\Models\JournalEntryLine;
-use App\Models\FiscalPeriod;
-use App\Models\Sale;
 use App\Models\Purchase;
-use Illuminate\Support\Facades\DB;
+use App\Models\Sale;
 use Exception;
+use Illuminate\Support\Facades\DB;
 
 class AccountingService
 {
@@ -27,7 +27,7 @@ class AccountingService
 
         return DB::transaction(function () use ($sale) {
             $fiscalPeriod = FiscalPeriod::getCurrentPeriod($sale->branch_id);
-            
+
             $entry = JournalEntry::create([
                 'branch_id' => $sale->branch_id,
                 'reference_number' => $this->generateReferenceNumber('SALE', $sale->id),
@@ -126,13 +126,13 @@ class AccountingService
      */
     public function generatePurchaseJournalEntry(Purchase $purchase): JournalEntry
     {
-        if (!empty($purchase->journal_entry_id)) {
+        if (! empty($purchase->journal_entry_id)) {
             throw new Exception('Journal entry already generated for this purchase');
         }
 
         return DB::transaction(function () use ($purchase) {
             $fiscalPeriod = FiscalPeriod::getCurrentPeriod($purchase->branch_id);
-            
+
             $entry = JournalEntry::create([
                 'branch_id' => $purchase->branch_id,
                 'reference_number' => $this->generateReferenceNumber('PURCH', $purchase->id),
@@ -237,7 +237,7 @@ class AccountingService
             throw new Exception('Journal entry already posted');
         }
 
-        if (!$this->validateBalance($entry)) {
+        if (! $this->validateBalance($entry)) {
             throw new Exception('Journal entry is not balanced');
         }
 
@@ -275,7 +275,7 @@ class AccountingService
             throw new Exception('Can only reverse posted journal entries');
         }
 
-        if (!$entry->is_reversible) {
+        if (! $entry->is_reversible) {
             throw new Exception('This journal entry cannot be reversed');
         }
 

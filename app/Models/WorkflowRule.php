@@ -45,7 +45,7 @@ class WorkflowRule extends Model
         }
 
         foreach ($this->conditions as $condition) {
-            if (!$this->evaluateCondition($condition, $data)) {
+            if (! $this->evaluateCondition($condition, $data)) {
                 return false;
             }
         }
@@ -62,7 +62,7 @@ class WorkflowRule extends Model
         $operator = $condition['operator'] ?? '=';
         $value = $condition['value'] ?? null;
 
-        if (!$field || !isset($data[$field])) {
+        if (! $field || ! isset($data[$field])) {
             return false;
         }
 
@@ -75,11 +75,11 @@ class WorkflowRule extends Model
             '<' => $dataValue < $value,
             '>=' => $dataValue >= $value,
             '<=' => $dataValue <= $value,
-            'in' => in_array($dataValue, (array)$value),
-            'not_in' => !in_array($dataValue, (array)$value),
-            'contains' => str_contains((string)$dataValue, (string)$value),
-            'starts_with' => str_starts_with((string)$dataValue, (string)$value),
-            'ends_with' => str_ends_with((string)$dataValue, (string)$value),
+            'in' => in_array($dataValue, (array) $value),
+            'not_in' => ! in_array($dataValue, (array) $value),
+            'contains' => str_contains((string) $dataValue, (string) $value),
+            'starts_with' => str_starts_with((string) $dataValue, (string) $value),
+            'ends_with' => str_ends_with((string) $dataValue, (string) $value),
             default => false,
         };
     }

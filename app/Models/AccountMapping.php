@@ -68,7 +68,7 @@ class AccountMapping extends Model
             $operator = $condition['operator'] ?? '=';
             $value = $condition['value'] ?? null;
 
-            if (!$field || !isset($data[$field])) {
+            if (! $field || ! isset($data[$field])) {
                 continue;
             }
 
@@ -102,7 +102,7 @@ class AccountMapping extends Model
                     }
                     break;
                 case 'in':
-                    if (!in_array($dataValue, (array)$value)) {
+                    if (! in_array($dataValue, (array) $value)) {
                         return false;
                     }
                     break;

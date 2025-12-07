@@ -50,7 +50,7 @@ return new class extends Migration
             $table->timestamp('last_checked_at')->nullable();
             $table->timestamp('last_triggered_at')->nullable();
             $table->timestamps();
-            
+
             $table->index(['branch_id', 'is_active']);
             $table->index(['category', 'alert_type']);
             $table->index('last_checked_at');
@@ -76,7 +76,7 @@ return new class extends Migration
             $table->foreignId('resolved_by')->nullable()->constrained('users')->nullOnDelete();
             $table->text('resolution_notes')->nullable();
             $table->timestamps();
-            
+
             $table->index(['alert_rule_id', 'status']);
             $table->index(['branch_id', 'severity', 'status']);
             $table->index(['entity_type', 'entity_id']);
@@ -93,7 +93,7 @@ return new class extends Migration
             $table->boolean('read')->default(false);
             $table->timestamp('read_at')->nullable();
             $table->timestamps();
-            
+
             $table->index(['alert_instance_id', 'user_id']);
             $table->index(['user_id', 'read']);
         });
@@ -114,7 +114,7 @@ return new class extends Migration
             $table->date('period_end');
             $table->json('metadata')->nullable();
             $table->timestamps();
-            
+
             $table->unique(['branch_id', 'metric_key', 'entity_type', 'entity_id', 'period_start'], 'anomaly_baseline_unique');
             $table->index(['metric_key', 'period_end']);
         });

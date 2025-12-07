@@ -66,7 +66,7 @@ class BomOperation extends BaseModel
         $timeHours = $this->total_time / 60;
         $workCenterCost = $timeHours * (float) $this->workCenter->cost_per_hour;
         $laborCost = (float) $this->labor_cost;
-        
+
         return ($workCenterCost + $laborCost) * $quantity;
     }
 }

@@ -18,8 +18,9 @@ class ChartOfAccountsSeeder extends Seeder
     {
         $branch = Branch::first();
 
-        if (!$branch) {
+        if (! $branch) {
             $this->command->warn('No branch found. Please create a branch first.');
+
             return;
         }
 

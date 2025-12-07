@@ -63,7 +63,7 @@ class BomItem extends BaseModel
     {
         $baseQuantity = (float) $this->quantity;
         $scrapFactor = 1 + ((float) $this->scrap_percentage / 100);
-        
+
         return $baseQuantity * $scrapFactor;
     }
 }

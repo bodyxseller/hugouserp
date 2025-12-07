@@ -7,7 +7,6 @@ namespace App\Services;
 use App\Models\Module;
 use App\Models\ModuleNavigation;
 use App\Models\User;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 
 /**
@@ -100,7 +99,7 @@ class ModuleNavigationService
         // Group by module category if needed
         if ($category) {
             return array_filter($navigation, function ($item) use ($category) {
-                return isset($item['module_key']) && 
+                return isset($item['module_key']) &&
                        $this->getModuleCategory($item['module_key']) === $category;
             });
         }
@@ -257,19 +256,19 @@ class ModuleNavigationService
             case 'branch_manager':
                 // Branch managers see operational items
                 return $this->filterNavigationByCategories($navigation, [
-                    'dashboard', 'sales', 'inventory', 'purchases', 'hr', 'reports'
+                    'dashboard', 'sales', 'inventory', 'purchases', 'hr', 'reports',
                 ]);
 
             case 'sales_user':
                 // Sales users see only sales-related items
                 return $this->filterNavigationByCategories($navigation, [
-                    'dashboard', 'sales', 'inventory'
+                    'dashboard', 'sales', 'inventory',
                 ]);
 
             case 'warehouse_user':
                 // Warehouse users see inventory-related items
                 return $this->filterNavigationByCategories($navigation, [
-                    'dashboard', 'inventory', 'purchases'
+                    'dashboard', 'inventory', 'purchases',
                 ]);
 
             default:
@@ -283,10 +282,11 @@ class ModuleNavigationService
     protected function filterNavigationByCategories(array $navigation, array $allowedCategories): array
     {
         return array_filter($navigation, function ($item) use ($allowedCategories) {
-            if (!isset($item['module_key'])) {
+            if (! isset($item['module_key'])) {
                 return false;
             }
             $category = $this->getModuleCategory($item['module_key']);
+
             return in_array($category, $allowedCategories);
         });
     }

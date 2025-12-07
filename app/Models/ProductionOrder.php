@@ -189,7 +189,7 @@ class ProductionOrder extends BaseModel
     {
         $prefix = 'PRO';
         $date = now()->format('Ym');
-        
+
         $lastOrder = static::where('branch_id', $branchId)
             ->where('order_number', 'like', "{$prefix}-{$date}-%")
             ->orderByDesc('id')

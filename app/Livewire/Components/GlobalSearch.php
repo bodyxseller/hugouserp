@@ -10,11 +10,17 @@ use Livewire\Component;
 class GlobalSearch extends Component
 {
     public string $query = '';
+
     public ?string $selectedModule = null;
+
     public array $results = [];
+
     public array $groupedResults = [];
+
     public array $recentSearches = [];
+
     public bool $showResults = false;
+
     public int $totalResults = 0;
 
     protected $listeners = ['resetSearch' => 'reset'];
@@ -35,7 +41,7 @@ class GlobalSearch extends Component
 
     public function updatedSelectedModule(): void
     {
-        if (!empty($this->query)) {
+        if (! empty($this->query)) {
             $this->performSearch();
         }
     }
@@ -44,10 +50,10 @@ class GlobalSearch extends Component
     {
         try {
             $searchService = app(GlobalSearchService::class);
-            
+
             $user = auth()->user();
             $branchId = $user ? ($user->current_branch_id ?? null) : null;
-            
+
             $result = $searchService->search(
                 $this->query,
                 $branchId,
@@ -61,7 +67,7 @@ class GlobalSearch extends Component
             $this->showResults = true;
 
         } catch (\Exception $e) {
-            $this->dispatch('error', message: __('Search failed: ') . $e->getMessage());
+            $this->dispatch('error', message: __('Search failed: ').$e->getMessage());
             $this->resetResults();
         }
     }

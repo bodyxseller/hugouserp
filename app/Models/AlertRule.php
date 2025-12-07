@@ -93,7 +93,7 @@ class AlertRule extends BaseModel
     {
         return $query->where(function ($q) {
             $q->whereNull('last_checked_at')
-              ->orWhereRaw('last_checked_at < DATE_SUB(NOW(), INTERVAL check_frequency_minutes MINUTE)');
+                ->orWhereRaw('last_checked_at < DATE_SUB(NOW(), INTERVAL check_frequency_minutes MINUTE)');
         });
     }
 
@@ -102,7 +102,7 @@ class AlertRule extends BaseModel
      */
     public function isDueForCheck(): bool
     {
-        if (!$this->last_checked_at) {
+        if (! $this->last_checked_at) {
             return true;
         }
 

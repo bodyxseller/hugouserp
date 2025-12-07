@@ -29,7 +29,7 @@ return new class extends Migration
             $table->json('metadata')->nullable();
             $table->timestamps();
             $table->softDeletes();
-            
+
             $table->index(['branch_id', 'status']);
             $table->index('product_id');
         });
@@ -48,7 +48,7 @@ return new class extends Migration
             $table->foreignId('alternative_group_id')->nullable(); // Group alternatives together
             $table->json('metadata')->nullable();
             $table->timestamps();
-            
+
             $table->index('bom_id');
             $table->index('product_id');
         });
@@ -69,7 +69,7 @@ return new class extends Migration
             $table->json('metadata')->nullable();
             $table->timestamps();
             $table->softDeletes();
-            
+
             $table->index(['branch_id', 'status']);
         });
 
@@ -88,7 +88,7 @@ return new class extends Migration
             $table->json('quality_criteria')->nullable(); // QC checkpoints
             $table->json('metadata')->nullable();
             $table->timestamps();
-            
+
             $table->index('bom_id');
             $table->index(['work_center_id', 'sequence']);
         });
@@ -119,7 +119,7 @@ return new class extends Migration
             $table->json('metadata')->nullable();
             $table->timestamps();
             $table->softDeletes();
-            
+
             $table->index(['branch_id', 'status']);
             $table->index('order_number');
             $table->index('product_id');
@@ -139,7 +139,7 @@ return new class extends Migration
             $table->boolean('is_issued')->default(false); // Material picked from warehouse
             $table->dateTime('issued_at')->nullable();
             $table->timestamps();
-            
+
             $table->index('production_order_id');
             $table->index('product_id');
         });
@@ -161,7 +161,7 @@ return new class extends Migration
             $table->text('notes')->nullable();
             $table->json('quality_results')->nullable(); // QC results
             $table->timestamps();
-            
+
             $table->index('production_order_id');
             $table->index(['work_center_id', 'status']);
         });
@@ -176,7 +176,7 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->json('metadata')->nullable();
             $table->timestamps();
-            
+
             $table->index('production_order_id');
             $table->index('transaction_type');
         });

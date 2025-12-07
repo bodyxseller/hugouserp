@@ -7,12 +7,8 @@ namespace App\Services;
 use App\Models\Account;
 use App\Models\JournalEntry;
 use App\Models\JournalEntryLine;
-use App\Models\Sale;
 use App\Models\Purchase;
-use App\Models\Customer;
-use App\Models\Supplier;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
+use App\Models\Sale;
 
 class FinancialReportService
 {
@@ -288,7 +284,7 @@ class FinancialReportService
 
             $customerKey = $sale->customer_id ?? 'unknown';
 
-            if (!isset($aging[$customerKey])) {
+            if (! isset($aging[$customerKey])) {
                 $aging[$customerKey] = [
                     'customer_id' => $sale->customer_id,
                     'customer_name' => $sale->customer?->name ?? 'Walk-in Customer',
@@ -343,7 +339,7 @@ class FinancialReportService
 
             $supplierKey = $purchase->supplier_id;
 
-            if (!isset($aging[$supplierKey])) {
+            if (! isset($aging[$supplierKey])) {
                 $aging[$supplierKey] = [
                     'supplier_id' => $purchase->supplier_id,
                     'supplier_name' => $purchase->supplier?->name ?? 'Unknown Supplier',

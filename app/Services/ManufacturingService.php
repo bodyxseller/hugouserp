@@ -14,8 +14,7 @@ class ManufacturingService
     public function __construct(
         private readonly InventoryService $inventoryService,
         private readonly AccountingService $accountingService
-    ) {
-    }
+    ) {}
 
     /**
      * Create a Bill of Materials.
@@ -38,14 +37,14 @@ class ManufacturingService
             ]);
 
             // Add BOM items if provided
-            if (!empty($data['items'])) {
+            if (! empty($data['items'])) {
                 foreach ($data['items'] as $item) {
                     $bom->items()->create($item);
                 }
             }
 
             // Add operations if provided
-            if (!empty($data['operations'])) {
+            if (! empty($data['operations'])) {
                 foreach ($data['operations'] as $operation) {
                     $bom->operations()->create($operation);
                 }
@@ -70,7 +69,7 @@ class ManufacturingService
                 'scrap_percentage' => $data['scrap_percentage'] ?? null,
                 'is_multi_level' => $data['is_multi_level'] ?? null,
                 'metadata' => $data['metadata'] ?? null,
-            ], fn($value) => !is_null($value)));
+            ], fn ($value) => ! is_null($value)));
 
             // Update items if provided
             if (isset($data['items'])) {
@@ -302,7 +301,7 @@ class ManufacturingService
 
             $order->update([
                 'status' => 'cancelled',
-                'notes' => ($order->notes ?? '') . "\n[CANCELLED] {$reason}",
+                'notes' => ($order->notes ?? '')."\n[CANCELLED] {$reason}",
             ]);
         });
 
@@ -316,15 +315,15 @@ class ManufacturingService
     {
         $query = ProductionOrder::where('branch_id', $branchId);
 
-        if (!empty($filters['status'])) {
+        if (! empty($filters['status'])) {
             $query->where('status', $filters['status']);
         }
 
-        if (!empty($filters['date_from'])) {
+        if (! empty($filters['date_from'])) {
             $query->whereDate('created_at', '>=', $filters['date_from']);
         }
 
-        if (!empty($filters['date_to'])) {
+        if (! empty($filters['date_to'])) {
             $query->whereDate('created_at', '<=', $filters['date_to']);
         }
 

@@ -90,12 +90,12 @@ class WorkCenter extends BaseModel
         $dayOfWeek = strtolower($dateTime->format('l'));
         $time = $dateTime->format('H:i');
 
-        if (!isset($this->operating_hours[$dayOfWeek])) {
+        if (! isset($this->operating_hours[$dayOfWeek])) {
             return false;
         }
 
         $hours = $this->operating_hours[$dayOfWeek];
-        
+
         return $time >= $hours['start'] && $time <= $hours['end'];
     }
 }

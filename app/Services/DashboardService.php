@@ -22,7 +22,7 @@ class DashboardService
             ->where('is_default', true)
             ->first();
 
-        if (!$layout) {
+        if (! $layout) {
             $layout = $this->createDefaultDashboard($userId, $branchId);
         }
 
@@ -67,7 +67,7 @@ class DashboardService
 
         foreach ($widgets as $widget) {
             // Check permissions
-            if (!$widget->userCanView($user)) {
+            if (! $widget->userCanView($user)) {
                 continue;
             }
 
@@ -137,7 +137,7 @@ class DashboardService
     public function updateWidget(int $userWidgetId, array $data): UserDashboardWidget
     {
         $userWidget = UserDashboardWidget::findOrFail($userWidgetId);
-        
+
         $userWidget->update(array_filter([
             'position_x' => $data['position_x'] ?? null,
             'position_y' => $data['position_y'] ?? null,
@@ -145,7 +145,7 @@ class DashboardService
             'height' => $data['height'] ?? null,
             'settings' => $data['settings'] ?? null,
             'is_visible' => $data['is_visible'] ?? null,
-        ], fn($value) => !is_null($value)));
+        ], fn ($value) => ! is_null($value)));
 
         return $userWidget;
     }
@@ -156,8 +156,8 @@ class DashboardService
     public function toggleWidget(int $userWidgetId): bool
     {
         $userWidget = UserDashboardWidget::findOrFail($userWidgetId);
-        $userWidget->update(['is_visible' => !$userWidget->is_visible]);
-        
+        $userWidget->update(['is_visible' => ! $userWidget->is_visible]);
+
         return $userWidget->is_visible;
     }
 
@@ -187,13 +187,13 @@ class DashboardService
     {
         return DB::transaction(function () use ($layoutId) {
             $layout = UserDashboardLayout::findOrFail($layoutId);
-            
+
             // Delete all widgets
             $layout->widgets()->delete();
-            
+
             // Re-add default widgets
             $this->addDefaultWidgets($layout);
-            
+
             return $layout->fresh(['widgets.widget']);
         });
     }
@@ -206,8 +206,8 @@ class DashboardService
         return DashboardWidget::active()
             ->ordered()
             ->get()
-            ->filter(fn($widget) => $widget->userCanView($user))
-            ->map(fn($widget) => [
+            ->filter(fn ($widget) => $widget->userCanView($user))
+            ->map(fn ($widget) => [
                 'id' => $widget->id,
                 'key' => $widget->key,
                 'name' => $widget->localized_name,
@@ -228,7 +228,7 @@ class DashboardService
     public function getWidgetData(int $userId, int $widgetId, ?int $branchId = null, bool $refresh = false): array
     {
         // Check cache first
-        if (!$refresh) {
+        if (! $refresh) {
             $cached = WidgetDataCache::getCached($userId, $widgetId, $branchId);
             if ($cached !== null) {
                 return $cached;
@@ -247,7 +247,7 @@ class DashboardService
 
     /**
      * Generate widget data based on widget type.
-     * 
+     *
      * TODO: Implement specific widget data generators for each widget type.
      * Each widget should have its own data generation logic based on widget->key.
      */
@@ -260,12 +260,12 @@ class DashboardService
         //     'inventory_summary' => $this->generateInventorySummaryData($userId, $branchId),
         //     default => ['message' => 'Widget data generator not implemented']
         // }
-        
+
         return [
             'widget_id' => $widget->id,
             'widget_key' => $widget->key,
             'data' => [
-                'message' => 'Widget data generator pending implementation for: ' . $widget->key,
+                'message' => 'Widget data generator pending implementation for: '.$widget->key,
             ],
             'generated_at' => now()->toISOString(),
         ];
@@ -277,7 +277,7 @@ class DashboardService
     public function clearWidgetCache(int $userId, ?int $widgetId = null): void
     {
         $query = WidgetDataCache::where('user_id', $userId);
-        
+
         if ($widgetId) {
             $query->where('dashboard_widget_id', $widgetId);
         }
@@ -299,7 +299,7 @@ class DashboardService
     public function getDashboardStats(int $userId, ?int $branchId = null): array
     {
         $layout = $this->getUserDashboard($userId, $branchId);
-        
+
         return [
             'total_widgets' => $layout->widgets()->count(),
             'visible_widgets' => $layout->widgets()->where('is_visible', true)->count(),

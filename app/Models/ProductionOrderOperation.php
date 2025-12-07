@@ -94,7 +94,7 @@ class ProductionOrderOperation extends BaseModel
     public function complete(array $qualityResults = []): void
     {
         $duration = $this->started_at ? now()->diffInMinutes($this->started_at) : 0;
-        
+
         $this->update([
             'status' => 'completed',
             'completed_at' => now(),
@@ -110,7 +110,7 @@ class ProductionOrderOperation extends BaseModel
     {
         $this->update([
             'status' => 'on_hold',
-            'notes' => ($this->notes ?? '') . "\n[HOLD] {$reason}",
+            'notes' => ($this->notes ?? '')."\n[HOLD] {$reason}",
         ]);
     }
 }

@@ -7,7 +7,6 @@ namespace App\Livewire\Admin\Modules;
 use App\Models\Branch;
 use App\Models\BranchModule;
 use App\Models\Module;
-use App\Models\ModuleNavigation;
 use App\Services\ModuleNavigationService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Livewire\Attributes\Layout;
@@ -19,10 +18,15 @@ class ManagementCenter extends Component
     use AuthorizesRequests;
 
     public ?int $selectedModuleId = null;
+
     public ?int $selectedBranchId = null;
+
     public array $modules = [];
+
     public array $branches = [];
+
     public ?array $selectedModuleData = null;
+
     public ?array $branchModuleSettings = null;
 
     public function mount(): void
@@ -80,8 +84,9 @@ class ManagementCenter extends Component
 
     public function loadModuleDetails(): void
     {
-        if (!$this->selectedModuleId) {
+        if (! $this->selectedModuleId) {
             $this->selectedModuleData = null;
+
             return;
         }
 
@@ -94,8 +99,9 @@ class ManagementCenter extends Component
             'reportDefinitions',
         ])->find($this->selectedModuleId);
 
-        if (!$module) {
+        if (! $module) {
             $this->selectedModuleData = null;
+
             return;
         }
 
@@ -130,8 +136,9 @@ class ManagementCenter extends Component
 
     public function loadBranchModuleSettings(): void
     {
-        if (!$this->selectedModuleId || !$this->selectedBranchId) {
+        if (! $this->selectedModuleId || ! $this->selectedBranchId) {
             $this->branchModuleSettings = null;
+
             return;
         }
 
@@ -149,7 +156,7 @@ class ManagementCenter extends Component
 
     public function toggleModuleForBranch(): void
     {
-        if (!$this->selectedModuleId || !$this->selectedBranchId) {
+        if (! $this->selectedModuleId || ! $this->selectedBranchId) {
             return;
         }
 
@@ -159,7 +166,7 @@ class ManagementCenter extends Component
             ->first();
 
         if ($branchModule) {
-            $branchModule->enabled = !$branchModule->enabled;
+            $branchModule->enabled = ! $branchModule->enabled;
             if ($branchModule->enabled) {
                 $branchModule->activated_at = now();
             }
@@ -182,22 +189,23 @@ class ManagementCenter extends Component
 
     public function toggleModuleActive(): void
     {
-        if (!$this->selectedModuleId) {
+        if (! $this->selectedModuleId) {
             return;
         }
 
         $module = Module::find($this->selectedModuleId);
-        if (!$module) {
+        if (! $module) {
             return;
         }
 
         // Prevent deactivating core modules
         if ($module->is_core && $module->is_active) {
             session()->flash('error', __('Core modules cannot be deactivated'));
+
             return;
         }
 
-        $module->is_active = !$module->is_active;
+        $module->is_active = ! $module->is_active;
         $module->save();
 
         $this->loadModules();

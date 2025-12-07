@@ -23,7 +23,7 @@ return new class extends Migration
             $table->boolean('is_active')->default(true);
             $table->boolean('is_mandatory')->default(false);
             $table->timestamps();
-            
+
             $table->index(['module_name', 'is_active']);
             $table->index('entity_type');
         });
@@ -42,7 +42,7 @@ return new class extends Migration
             $table->timestamp('completed_at')->nullable();
             $table->json('metadata')->nullable(); // Additional context
             $table->timestamps();
-            
+
             $table->index(['entity_type', 'entity_id']);
             $table->index(['status', 'current_stage']);
             $table->index('initiated_by');
@@ -62,7 +62,7 @@ return new class extends Migration
             $table->timestamp('responded_at')->nullable();
             $table->json('additional_data')->nullable();
             $table->timestamps();
-            
+
             $table->index(['workflow_instance_id', 'stage_order']);
             $table->index(['approver_id', 'status']);
             $table->index('status');
@@ -80,7 +80,7 @@ return new class extends Migration
             $table->boolean('is_sent')->default(false);
             $table->timestamp('sent_at')->nullable();
             $table->timestamps();
-            
+
             $table->index(['user_id', 'is_sent']);
             $table->index('type');
         });
@@ -95,7 +95,7 @@ return new class extends Migration
             $table->json('actions'); // [{type: 'require_approval', params: {...}}]
             $table->boolean('is_active')->default(true);
             $table->timestamps();
-            
+
             $table->index(['workflow_definition_id', 'is_active']);
         });
 
@@ -111,7 +111,7 @@ return new class extends Migration
             $table->json('metadata')->nullable();
             $table->timestamp('performed_at');
             $table->timestamps();
-            
+
             $table->index('workflow_instance_id');
             $table->index('performed_at');
         });

@@ -88,11 +88,11 @@ class DashboardWidget extends BaseModel
      */
     public function userCanView($user): bool
     {
-        if (!$this->requires_permission) {
+        if (! $this->requires_permission) {
             return true;
         }
 
-        if (!$this->permission_key) {
+        if (! $this->permission_key) {
             return true;
         }
 
@@ -104,7 +104,7 @@ class DashboardWidget extends BaseModel
      */
     public function getLocalizedNameAttribute(): string
     {
-        if (app()->getLocale() === 'ar' && !empty($this->name_ar)) {
+        if (app()->getLocale() === 'ar' && ! empty($this->name_ar)) {
             return $this->name_ar;
         }
 

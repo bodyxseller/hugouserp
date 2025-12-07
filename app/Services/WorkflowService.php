@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use App\Models\WorkflowDefinition;
-use App\Models\WorkflowInstance;
+use App\Models\User;
 use App\Models\WorkflowApproval;
 use App\Models\WorkflowAuditLog;
+use App\Models\WorkflowDefinition;
+use App\Models\WorkflowInstance;
 use App\Models\WorkflowNotification;
-use App\Models\User;
-use Illuminate\Support\Facades\DB;
 use Exception;
+use Illuminate\Support\Facades\DB;
 
 class WorkflowService
 {
@@ -32,12 +32,12 @@ class WorkflowService
             ->forEntity($entityType)
             ->first();
 
-        if (!$workflow) {
+        if (! $workflow) {
             return null;
         }
 
         // Check if workflow rules match
-        if (!$this->shouldInitiateWorkflow($workflow, $entityData)) {
+        if (! $this->shouldInitiateWorkflow($workflow, $entityData)) {
             return null;
         }
 
@@ -45,7 +45,7 @@ class WorkflowService
             $stages = $workflow->getOrderedStages();
             $firstStage = $stages[0] ?? null;
 
-            if (!$firstStage) {
+            if (! $firstStage) {
                 throw new Exception('Workflow has no stages defined');
             }
 
@@ -141,7 +141,7 @@ class WorkflowService
             throw new Exception('You are not authorized to approve this request');
         }
 
-        if (!$approval->isPending()) {
+        if (! $approval->isPending()) {
             throw new Exception('This approval has already been processed');
         }
 
@@ -220,7 +220,7 @@ class WorkflowService
             throw new Exception('You are not authorized to reject this request');
         }
 
-        if (!$approval->isPending()) {
+        if (! $approval->isPending()) {
             throw new Exception('This approval has already been processed');
         }
 
@@ -327,7 +327,7 @@ class WorkflowService
             ->where('stage_name', $stage['name'])
             ->first();
 
-        if (!$approval || !$approval->approver_id) {
+        if (! $approval || ! $approval->approver_id) {
             return;
         }
 
@@ -339,7 +339,7 @@ class WorkflowService
      */
     protected function notifyApprover(WorkflowApproval $approval): void
     {
-        if (!$approval->approver_id) {
+        if (! $approval->approver_id) {
             return;
         }
 

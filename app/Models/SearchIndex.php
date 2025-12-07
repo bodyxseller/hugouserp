@@ -66,14 +66,14 @@ class SearchIndex extends BaseModel
         // Use full-text search if available
         if (static::hasFullTextIndex()) {
             $builder->whereRaw(
-                "MATCH(title, content) AGAINST(? IN BOOLEAN MODE)",
+                'MATCH(title, content) AGAINST(? IN BOOLEAN MODE)',
                 [$query]
             );
         } else {
             // Fallback to LIKE search
             $builder->where(function ($q) use ($query) {
                 $q->where('title', 'like', "%{$query}%")
-                  ->orWhere('content', 'like', "%{$query}%");
+                    ->orWhere('content', 'like', "%{$query}%");
             });
         }
 
@@ -91,6 +91,7 @@ class SearchIndex extends BaseModel
         try {
             $connection = config('database.default');
             $driver = config("database.connections.{$connection}.driver");
+
             return in_array($driver, ['mysql', 'pgsql']);
         } catch (\Exception $e) {
             return false;

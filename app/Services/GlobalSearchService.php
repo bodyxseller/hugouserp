@@ -4,16 +4,15 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use App\Models\SearchIndex;
-use App\Models\SearchHistory;
-use App\Models\Product;
 use App\Models\Customer;
-use App\Models\Supplier;
-use App\Models\Sale;
+use App\Models\HREmployee;
+use App\Models\Product;
 use App\Models\Purchase;
 use App\Models\RentalContract;
-use App\Models\HREmployee;
-use Illuminate\Support\Facades\DB;
+use App\Models\Sale;
+use App\Models\SearchHistory;
+use App\Models\SearchIndex;
+use App\Models\Supplier;
 
 class GlobalSearchService
 {
@@ -114,8 +113,8 @@ class GlobalSearchService
     public function indexModel($model): void
     {
         $config = $this->getModelConfig($model);
-        
-        if (!$config) {
+
+        if (! $config) {
             return;
         }
 
@@ -159,7 +158,7 @@ class GlobalSearchService
 
         foreach (self::SEARCHABLE_MODELS as $config) {
             $query = $config['model']::query();
-            
+
             if ($branchId && method_exists($config['model'], 'branch')) {
                 $query->where('branch_id', $branchId);
             }
@@ -226,7 +225,7 @@ class GlobalSearchService
     private function getModelConfig($model): ?array
     {
         $class = get_class($model);
-        
+
         foreach (self::SEARCHABLE_MODELS as $config) {
             if ($config['model'] === $class) {
                 return $config;
@@ -242,9 +241,9 @@ class GlobalSearchService
     private function extractFields($model, array $fields): string
     {
         $values = [];
-        
+
         foreach ($fields as $field) {
-            if (isset($model->$field) && !empty($model->$field)) {
+            if (isset($model->$field) && ! empty($model->$field)) {
                 $values[] = $model->$field;
             }
         }

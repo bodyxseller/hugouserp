@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('sub_category')->nullable()->after('account_category')->comment('current, fixed, etc.');
             $table->boolean('is_system_account')->default(false)->after('is_active');
             $table->json('metadata')->nullable()->after('description');
-            
+
             $table->index(['type', 'is_active']);
             $table->index('currency_code');
         });
@@ -33,7 +33,7 @@ return new class extends Migration
             $table->json('conditions')->nullable(); // conditional mappings
             $table->boolean('is_active')->default(true);
             $table->timestamps();
-            
+
             $table->unique(['branch_id', 'module_name', 'mapping_key']);
             $table->index(['module_name', 'is_active']);
         });
@@ -50,7 +50,7 @@ return new class extends Migration
             $table->boolean('is_auto_generated')->default(false)->after('status');
             $table->boolean('is_reversible')->default(true)->after('is_auto_generated');
             $table->foreignId('reversed_by_entry_id')->nullable()->after('is_reversible')->constrained('journal_entries')->onDelete('set null');
-            
+
             $table->index(['source_module', 'source_type', 'source_id']);
             $table->index(['fiscal_year', 'fiscal_period']);
             $table->index(['status', 'entry_date']);
@@ -64,7 +64,7 @@ return new class extends Migration
             $table->decimal('exchange_rate', 10, 6)->nullable()->after('currency_id')->default(1.000000);
             $table->decimal('debit_base', 15, 2)->nullable()->after('exchange_rate')->comment('Amount in base currency');
             $table->decimal('credit_base', 15, 2)->nullable()->after('debit_base')->comment('Amount in base currency');
-            
+
             $table->index('dimension1');
             $table->index('dimension2');
         });
@@ -80,7 +80,7 @@ return new class extends Migration
             $table->date('end_date');
             $table->enum('status', ['open', 'closed', 'locked'])->default('open');
             $table->timestamps();
-            
+
             $table->unique(['branch_id', 'year', 'period']);
             $table->index(['year', 'period', 'status']);
         });
@@ -94,7 +94,7 @@ return new class extends Migration
             $table->json('configuration'); // account filters, grouping rules, etc.
             $table->boolean('is_default')->default(false);
             $table->timestamps();
-            
+
             $table->index(['branch_id', 'report_type']);
         });
 
@@ -114,14 +114,14 @@ return new class extends Migration
         Schema::dropIfExists('aging_configurations');
         Schema::dropIfExists('financial_report_configs');
         Schema::dropIfExists('fiscal_periods');
-        
+
         Schema::table('journal_entry_lines', function (Blueprint $table) {
             $table->dropIndex(['dimension1']);
             $table->dropIndex(['dimension2']);
             $table->dropForeign(['currency_id']);
             $table->dropColumn([
                 'dimension1', 'dimension2', 'currency_id', 'exchange_rate',
-                'debit_base', 'credit_base'
+                'debit_base', 'credit_base',
             ]);
         });
 
@@ -134,7 +134,7 @@ return new class extends Migration
             $table->dropColumn([
                 'source_module', 'source_type', 'source_id', 'approved_by', 'approved_at',
                 'fiscal_year', 'fiscal_period', 'is_auto_generated', 'is_reversible',
-                'reversed_by_entry_id'
+                'reversed_by_entry_id',
             ]);
         });
 
@@ -145,7 +145,7 @@ return new class extends Migration
             $table->dropIndex(['currency_code']);
             $table->dropColumn([
                 'currency_code', 'requires_currency', 'account_category',
-                'sub_category', 'is_system_account', 'metadata'
+                'sub_category', 'is_system_account', 'metadata',
             ]);
         });
     }

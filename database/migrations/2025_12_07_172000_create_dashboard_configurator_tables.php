@@ -34,7 +34,7 @@ return new class extends Migration
             $table->boolean('is_active')->default(true);
             $table->integer('sort_order')->default(0);
             $table->timestamps();
-            
+
             $table->index('category');
             $table->index(['is_active', 'sort_order']);
         });
@@ -48,7 +48,7 @@ return new class extends Migration
             $table->boolean('is_default')->default(true);
             $table->json('layout_config')->nullable(); // Grid layout configuration
             $table->timestamps();
-            
+
             $table->index(['user_id', 'is_default']);
             $table->index('branch_id');
         });
@@ -66,7 +66,7 @@ return new class extends Migration
             $table->boolean('is_visible')->default(true);
             $table->integer('sort_order')->default(0);
             $table->timestamps();
-            
+
             $table->index('user_dashboard_layout_id');
             $table->index(['dashboard_widget_id', 'is_visible']);
         });
@@ -81,7 +81,7 @@ return new class extends Migration
             $table->timestamp('cached_at');
             $table->timestamp('expires_at')->nullable();
             $table->timestamps();
-            
+
             $table->index(['user_id', 'dashboard_widget_id', 'branch_id']);
             $table->index('expires_at');
         });

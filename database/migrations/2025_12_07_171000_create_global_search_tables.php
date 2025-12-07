@@ -26,7 +26,7 @@ return new class extends Migration
             $table->string('url')->nullable(); // Direct link
             $table->json('metadata')->nullable(); // Additional data
             $table->timestamp('indexed_at');
-            
+
             $table->index(['branch_id', 'searchable_type']);
             $table->index('module');
             $table->index(['title', 'content']); // Regular index as fallback
@@ -36,7 +36,7 @@ return new class extends Migration
         // Add fulltext index if database supports it (MySQL/PostgreSQL)
         $connection = config('database.default');
         $driver = config("database.connections.{$connection}.driver");
-        
+
         if (in_array($driver, ['mysql', 'pgsql'])) {
             Schema::table('search_index', function (Blueprint $table) {
                 $table->fullText(['title', 'content']);
@@ -51,7 +51,7 @@ return new class extends Migration
             $table->string('module')->nullable(); // If filtered by module
             $table->integer('results_count')->default(0);
             $table->timestamps();
-            
+
             $table->index(['user_id', 'created_at']);
         });
     }

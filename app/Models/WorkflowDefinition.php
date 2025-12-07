@@ -59,7 +59,8 @@ class WorkflowDefinition extends Model
     public function getOrderedStages(): array
     {
         $stages = $this->stages ?? [];
-        usort($stages, fn($a, $b) => ($a['order'] ?? 0) <=> ($b['order'] ?? 0));
+        usort($stages, fn ($a, $b) => ($a['order'] ?? 0) <=> ($b['order'] ?? 0));
+
         return $stages;
     }
 
@@ -73,6 +74,7 @@ class WorkflowDefinition extends Model
                 return $stage;
             }
         }
+
         return null;
     }
 
