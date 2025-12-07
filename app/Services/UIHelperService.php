@@ -169,12 +169,20 @@ class UIHelperService
     public function formatBytes(int $bytes, int $precision = 2): string
     {
         $units = ['B', 'KB', 'MB', 'GB', 'TB'];
-
-        for ($i = 0; $bytes > 1024 && $i < count($units) - 1; $i++) {
-            $bytes /= 1024;
+        
+        if ($bytes === 0) {
+            return '0 B';
         }
 
-        return round($bytes, $precision) . ' ' . $units[$i];
+        $i = 0;
+        $value = $bytes;
+        
+        while ($value > 1024 && $i < count($units) - 1) {
+            $value = $value / 1024.0;
+            $i++;
+        }
+
+        return round($value, $precision) . ' ' . $units[$i];
     }
 
     /**

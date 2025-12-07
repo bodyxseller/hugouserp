@@ -18,6 +18,11 @@ use Illuminate\Contracts\Validation\ValidationRule;
  */
 class ValidStockQuantity implements ValidationRule
 {
+    /**
+     * Floating point comparison tolerance
+     */
+    private const FLOAT_EPSILON = 0.000001;
+
     public function __construct(
         private float $maxQuantity = 999999.99,
         private int $decimalPlaces = 2,
@@ -42,7 +47,7 @@ class ValidStockQuantity implements ValidationRule
         }
 
         // Check if zero when not allowed
-        if (! $this->allowZero && abs($quantity) < 0.000001) {
+        if (! $this->allowZero && abs($quantity) < self::FLOAT_EPSILON) {
             $fail(__('The :attribute must be greater than zero'));
             return;
         }

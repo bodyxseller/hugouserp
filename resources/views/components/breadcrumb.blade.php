@@ -29,11 +29,11 @@
                     
                     @if (isset($item['url']) && !($item['active'] ?? false))
                         <a href="{{ $item['url'] }}" 
-                           class="ml-2 text-sm font-medium text-slate-500 hover:text-slate-700 transition">
+                           class="{{ $dir === 'rtl' ? 'mr-2' : 'ml-2' }} text-sm font-medium text-slate-500 hover:text-slate-700 transition">
                             {{ $item['label'] }}
                         </a>
                     @else
-                        <span class="ml-2 text-sm font-medium text-slate-700" aria-current="page">
+                        <span class="{{ $dir === 'rtl' ? 'mr-2' : 'ml-2' }} text-sm font-medium text-slate-700" aria-current="page">
                             {{ $item['label'] }}
                         </span>
                     @endif
