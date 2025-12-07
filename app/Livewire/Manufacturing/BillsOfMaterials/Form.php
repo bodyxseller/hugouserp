@@ -51,12 +51,13 @@ class Form extends Component
 
     public function mount(?BillOfMaterial $bom = null): void
     {
-        $this->authorize('manufacturing.create');
-
         if ($bom && $bom->exists) {
+            $this->authorize('manufacturing.edit');
             $this->bom = $bom;
             $this->editMode = true;
             $this->fillFormFromModel();
+        } else {
+            $this->authorize('manufacturing.create');
         }
     }
 
