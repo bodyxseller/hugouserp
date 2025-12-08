@@ -360,10 +360,10 @@ class StoreSyncService
 
                 $sale->items()->create([
                     'product_id' => $productMapping?->product_id,
-                    'quantity' => (int) ($lineItem['quantity'] ?? 1),
+                    'qty' => (int) ($lineItem['quantity'] ?? 1),
                     'unit_price' => (float) ($lineItem['price'] ?? 0),
                     'discount' => (float) ($lineItem['total_discount'] ?? 0),
-                    'total' => (float) ($lineItem['quantity'] ?? 1) * (float) ($lineItem['price'] ?? 0) - (float) ($lineItem['total_discount'] ?? 0),
+                    'line_total' => (float) ($lineItem['quantity'] ?? 1) * (float) ($lineItem['price'] ?? 0) - (float) ($lineItem['total_discount'] ?? 0),
                 ]);
             }
         });
@@ -466,10 +466,10 @@ class StoreSyncService
 
                 $sale->items()->create([
                     'product_id' => $productMapping?->product_id,
-                    'quantity' => (int) ($lineItem['quantity'] ?? 1),
+                    'qty' => (int) ($lineItem['quantity'] ?? 1),
                     'unit_price' => (float) ($lineItem['price'] ?? 0),
                     'discount' => 0,
-                    'total' => (float) ($lineItem['total'] ?? 0),
+                    'line_total' => (float) ($lineItem['total'] ?? 0),
                 ]);
             }
         });

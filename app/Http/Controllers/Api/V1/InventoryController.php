@@ -23,15 +23,14 @@ class InventoryController extends BaseApiController
                 'products.name',
                 'products.sku',
                 'products.min_stock',
-                'products.warehouse_id',
                 'products.branch_id',
                 DB::raw('COALESCE(SUM(CASE WHEN stock_movements.direction = "in" THEN stock_movements.qty ELSE 0 END) - SUM(CASE WHEN stock_movements.direction = "out" THEN stock_movements.qty ELSE 0 END), 0) as current_quantity')
             ])
             ->leftJoin('stock_movements', 'products.id', '=', 'stock_movements.product_id')
             ->when($store?->branch_id, fn ($q) => $q->where('products.branch_id', $store->branch_id))
             ->when($request->filled('sku'), fn ($q) => $q->where('products.sku', $request->sku))
-            ->when($request->filled('warehouse_id'), fn ($q) => $q->where('products.warehouse_id', $request->warehouse_id))
-            ->groupBy('products.id', 'products.name', 'products.sku', 'products.min_stock', 'products.warehouse_id', 'products.branch_id');
+            ->when($request->filled('warehouse_id'), fn ($q) => $q->where('stock_movements.warehouse_id', $request->warehouse_id))
+            ->groupBy('products.id', 'products.name', 'products.sku', 'products.min_stock', 'products.branch_id');
 
         // For low stock filter
         if ($request->boolean('low_stock')) {
@@ -93,10 +92,15 @@ class InventoryController extends BaseApiController
         }
 
         if ($actualQty > 0) {
-            DB::transaction(function () use ($product, $actualDirection, $actualQty, $validated) {
+            DB::transaction(function () use ($product, $actualDirection, $actualQty, $validated, $request) {
+                // Get warehouse_id from request, settings, or first available warehouse
+                $warehouseId = $request->input('warehouse_id') 
+                    ?? settings('default_warehouse_id')
+                    ?? \App\Models\Warehouse::first()?->id;
+
                 StockMovement::create([
                     'product_id' => $product->id,
-                    'warehouse_id' => $product->warehouse_id,
+                    'warehouse_id' => $warehouseId,
                     'branch_id' => $product->branch_id,
                     'direction' => $actualDirection,
                     'qty' => $actualQty,
@@ -175,9 +179,14 @@ class InventoryController extends BaseApiController
                 }
 
                 if ($actualQty > 0) {
+                    // Get warehouse_id from item, request, settings, or first available warehouse
+                    $warehouseId = $item['warehouse_id'] ?? $request->input('warehouse_id') 
+                        ?? settings('default_warehouse_id')
+                        ?? \App\Models\Warehouse::first()?->id;
+
                     StockMovement::create([
                         'product_id' => $product->id,
-                        'warehouse_id' => $product->warehouse_id,
+                        'warehouse_id' => $warehouseId,
                         'branch_id' => $product->branch_id,
                         'direction' => $actualDirection,
                         'qty' => $actualQty,
