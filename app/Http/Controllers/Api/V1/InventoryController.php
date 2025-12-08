@@ -18,30 +18,27 @@ class InventoryController extends BaseApiController
         $store = $this->getStore($request);
 
         $query = Product::query()
-            ->select('id', 'name', 'sku', 'min_stock', 'warehouse_id', 'branch_id')
-            ->when($store?->branch_id, fn ($q) => $q->where('branch_id', $store->branch_id))
-            ->when($request->filled('sku'), fn ($q) => $q->where('sku', $request->sku))
-            ->when($request->filled('warehouse_id'), fn ($q) => $q->where('warehouse_id', $request->warehouse_id));
+            ->select([
+                'products.id',
+                'products.name',
+                'products.sku',
+                'products.min_stock',
+                'products.warehouse_id',
+                'products.branch_id',
+                DB::raw('COALESCE(SUM(CASE WHEN stock_movements.direction = "in" THEN stock_movements.qty ELSE 0 END) - SUM(CASE WHEN stock_movements.direction = "out" THEN stock_movements.qty ELSE 0 END), 0) as current_quantity')
+            ])
+            ->leftJoin('stock_movements', 'products.id', '=', 'stock_movements.product_id')
+            ->when($store?->branch_id, fn ($q) => $q->where('products.branch_id', $store->branch_id))
+            ->when($request->filled('sku'), fn ($q) => $q->where('products.sku', $request->sku))
+            ->when($request->filled('warehouse_id'), fn ($q) => $q->where('products.warehouse_id', $request->warehouse_id))
+            ->groupBy('products.id', 'products.name', 'products.sku', 'products.min_stock', 'products.warehouse_id', 'products.branch_id');
 
-        // For low stock filter, we need to calculate stock from movements
+        // For low stock filter
         if ($request->boolean('low_stock')) {
-            $query->whereHas('stockMovements', function ($q) {
-                $q->selectRaw('product_id, SUM(CASE WHEN direction = "in" THEN qty ELSE 0 END) - SUM(CASE WHEN direction = "out" THEN qty ELSE 0 END) as balance')
-                    ->groupBy('product_id')
-                    ->havingRaw('balance <= products.min_stock');
-            });
+            $query->havingRaw('current_quantity <= products.min_stock');
         }
 
         $products = $query->paginate($request->get('per_page', 100));
-
-        // Add calculated stock quantity to each product
-        $products->getCollection()->transform(function ($product) {
-            $currentQty = StockMovement::where('product_id', $product->id)
-                ->selectRaw('SUM(CASE WHEN direction = "in" THEN qty ELSE 0 END) - SUM(CASE WHEN direction = "out" THEN qty ELSE 0 END) as balance')
-                ->value('balance') ?? 0;
-            $product->current_quantity = (float) $currentQty;
-            return $product;
-        });
 
         return $this->paginatedResponse($products, __('Stock levels retrieved successfully'));
     }
@@ -78,12 +75,8 @@ class InventoryController extends BaseApiController
             return $this->errorResponse(__('Product not found'), 404);
         }
 
-        // Get current quantity using stock movements
-        $currentQty = StockMovement::where('product_id', $product->id)
-            ->selectRaw('SUM(CASE WHEN direction = "in" THEN qty ELSE 0 END) - SUM(CASE WHEN direction = "out" THEN qty ELSE 0 END) as balance')
-            ->value('balance') ?? 0;
-
-        $oldQuantity = (float) $currentQty;
+        // Get current quantity using helper method
+        $oldQuantity = $this->calculateCurrentStock($product->id);
         
         // Calculate new quantity and direction
         if ($validated['direction'] === 'set') {
@@ -164,12 +157,8 @@ class InventoryController extends BaseApiController
             }
 
             try {
-                // Get current quantity using stock movements
-                $currentQty = StockMovement::where('product_id', $product->id)
-                    ->selectRaw('SUM(CASE WHEN direction = "in" THEN qty ELSE 0 END) - SUM(CASE WHEN direction = "out" THEN qty ELSE 0 END) as balance')
-                    ->value('balance') ?? 0;
-
-                $oldQuantity = (float) $currentQty;
+                // Get current quantity using helper method
+                $oldQuantity = $this->calculateCurrentStock($product->id);
                 
                 // Calculate new quantity and direction
                 if ($item['direction'] === 'set') {
@@ -230,5 +219,15 @@ class InventoryController extends BaseApiController
         $movements = $query->paginate($request->get('per_page', 50));
 
         return $this->paginatedResponse($movements, __('Stock movements retrieved successfully'));
+    }
+
+    /**
+     * Calculate current stock quantity for a product
+     */
+    protected function calculateCurrentStock(int $productId): float
+    {
+        return (float) (StockMovement::where('product_id', $productId)
+            ->selectRaw('SUM(CASE WHEN direction = "in" THEN qty ELSE 0 END) - SUM(CASE WHEN direction = "out" THEN qty ELSE 0 END) as balance')
+            ->value('balance') ?? 0);
     }
 }
