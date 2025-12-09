@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\QueryException;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
@@ -105,7 +106,7 @@ return new class extends Migration
                     // Drop foreign key if it exists (using the named constraint)
                     try {
                         $table->dropForeign('rental_contracts_rental_period_id_foreign');
-                    } catch (\Exception $e) {
+                    } catch (QueryException $e) {
                         // Foreign key may not exist, continue
                     }
                     $table->dropColumn('rental_period_id');
