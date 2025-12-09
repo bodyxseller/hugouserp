@@ -90,10 +90,22 @@ class InventoryController extends BaseApiController
 
         if ($actualQty > 0) {
             DB::transaction(function () use ($product, $actualDirection, $actualQty, $validated, $request) {
-                // Get warehouse_id from request, settings, or first available warehouse
-                $warehouseId = $request->input('warehouse_id')
-                    ?? settings('default_warehouse_id')
-                    ?? \App\Models\Warehouse::first()?->id;
+                // Resolve warehouse_id using fallback logic
+                $warehouseId = $this->resolveWarehouseId(
+                    $request->input('warehouse_id'),
+                    $product->branch_id
+                );
+
+                // Ensure warehouse_id is not null to prevent foreign key constraint violation
+                if ($warehouseId === null) {
+                    throw new \Illuminate\Validation\ValidationException(
+                        validator([], []),
+                        response()->json([
+                            'message' => __('No warehouse available for stock movement'),
+                            'errors' => ['warehouse_id' => [__('No warehouse available for stock movement')]],
+                        ], 422)
+                    );
+                }
 
                 StockMovement::create([
                     'product_id' => $product->id,
@@ -169,10 +181,16 @@ class InventoryController extends BaseApiController
                 }
 
                 if ($actualQty > 0) {
-                    // Get warehouse_id from item, request, settings, or first available warehouse
-                    $warehouseId = $item['warehouse_id'] ?? $request->input('warehouse_id')
-                        ?? settings('default_warehouse_id')
-                        ?? \App\Models\Warehouse::first()?->id;
+                    // Resolve warehouse_id using fallback logic
+                    $warehouseId = $this->resolveWarehouseId(
+                        $item['warehouse_id'] ?? $request->input('warehouse_id'),
+                        $product->branch_id
+                    );
+
+                    // Ensure warehouse_id is not null to prevent foreign key constraint violation
+                    if ($warehouseId === null) {
+                        throw new \Exception(__('No warehouse available for stock movement'));
+                    }
 
                     StockMovement::create([
                         'product_id' => $product->id,
@@ -230,5 +248,43 @@ class InventoryController extends BaseApiController
         return (float) (StockMovement::where('product_id', $productId)
             ->selectRaw('SUM(CASE WHEN direction = "in" THEN qty ELSE 0 END) - SUM(CASE WHEN direction = "out" THEN qty ELSE 0 END) as balance')
             ->value('balance') ?? 0);
+    }
+
+    /**
+     * Resolve warehouse ID with fallback logic
+     * Priority: preferred ID → default setting → branch warehouse → first available
+     * 
+     * @param int|null $preferredId Preferred warehouse ID from request
+     * @param int|null $branchId Branch ID to filter warehouses
+     * @return int|null Resolved warehouse ID or null if none available
+     */
+    protected function resolveWarehouseId(?int $preferredId, ?int $branchId = null): ?int
+    {
+        // Return preferred ID if provided
+        if ($preferredId !== null) {
+            return $preferredId;
+        }
+
+        // Try default warehouse from settings
+        $defaultWarehouseId = setting('default_warehouse_id');
+        if ($defaultWarehouseId !== null) {
+            return (int) $defaultWarehouseId;
+        }
+
+        // Try to get warehouse from branch
+        if ($branchId !== null) {
+            $branchWarehouse = \App\Models\Warehouse::where('branch_id', $branchId)
+                ->where('status', 'active')
+                ->first();
+            
+            if ($branchWarehouse) {
+                return $branchWarehouse->id;
+            }
+        }
+
+        // Fall back to first available active warehouse
+        $firstWarehouse = \App\Models\Warehouse::where('status', 'active')->first();
+        
+        return $firstWarehouse?->id;
     }
 }

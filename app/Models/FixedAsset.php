@@ -46,6 +46,15 @@ class FixedAsset extends Model
         'updated_by',
     ];
 
+    protected $attributes = [
+        'purchase_cost' => 0,
+        'salvage_value' => 0,
+        'accumulated_depreciation' => 0,
+        'book_value' => 0,
+        'useful_life_years' => 0,
+        'useful_life_months' => 0,
+    ];
+
     protected $casts = [
         'purchase_date' => 'date',
         'purchase_cost' => 'decimal:4',
@@ -120,7 +129,10 @@ class FixedAsset extends Model
      */
     public function isFullyDepreciated(): bool
     {
-        return $this->book_value <= $this->salvage_value;
+        $bookValue = (float) ($this->book_value ?? 0);
+        $salvageValue = (float) ($this->salvage_value ?? 0);
+        
+        return $bookValue <= $salvageValue;
     }
 
     /**
@@ -128,7 +140,10 @@ class FixedAsset extends Model
      */
     public function getTotalUsefulLifeMonths(): int
     {
-        return ($this->useful_life_years * 12) + $this->useful_life_months;
+        $years = (int) ($this->useful_life_years ?? 0);
+        $months = (int) ($this->useful_life_months ?? 0);
+        
+        return ($years * 12) + $months;
     }
 
     /**
@@ -136,7 +151,11 @@ class FixedAsset extends Model
      */
     public function getMonthlyDepreciation(): float
     {
-        $depreciableAmount = $this->purchase_cost - $this->salvage_value;
+        $purchaseCost = (float) ($this->purchase_cost ?? 0);
+        $salvageValue = (float) ($this->salvage_value ?? 0);
+        
+        // Prevent negative depreciable amounts when salvage exceeds purchase cost
+        $depreciableAmount = max(0, $purchaseCost - $salvageValue);
         $totalMonths = $this->getTotalUsefulLifeMonths();
         
         return $totalMonths > 0 ? $depreciableAmount / $totalMonths : 0;

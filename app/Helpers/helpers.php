@@ -199,3 +199,54 @@ if (! function_exists('sanitize_svg_icon')) {
         return trim($result);
     }
 }
+
+// Polyfills for Laravel helper functions (offline environment support)
+
+if (! function_exists('join_paths')) {
+    /**
+     * Join file paths with the appropriate directory separator.
+     *
+     * @param  string  ...$paths
+     * @return string
+     */
+    function join_paths(string ...$paths): string
+    {
+        if (count($paths) === 0) {
+            return '';
+        }
+
+        $result = $paths[0];
+        for ($i = 1; $i < count($paths); $i++) {
+            $result = rtrim($result, DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR.ltrim($paths[$i], DIRECTORY_SEPARATOR);
+        }
+
+        return $result;
+    }
+}
+
+if (! function_exists('value')) {
+    /**
+     * Return the default value of the given value.
+     *
+     * @param  mixed  $value
+     * @param  mixed  ...$args
+     * @return mixed
+     */
+    function value(mixed $value, mixed ...$args): mixed
+    {
+        return $value instanceof Closure ? $value(...$args) : $value;
+    }
+}
+
+if (! function_exists('array_last')) {
+    /**
+     * Get the last element from an array.
+     *
+     * @param  array  $array
+     * @return mixed
+     */
+    function array_last(array $array): mixed
+    {
+        return count($array) > 0 ? end($array) : null;
+    }
+}

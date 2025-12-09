@@ -8,6 +8,7 @@ use App\Models\Product;
 use App\Models\PurchaseRequisition;
 use App\Models\PurchaseRequisitionItem;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Http\RedirectResponse;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 
@@ -118,7 +119,7 @@ class Form extends Component
         }
     }
 
-    public function save(): void
+    public function save(): RedirectResponse
     {
         $this->validate();
 
@@ -140,18 +141,16 @@ class Form extends Component
 
         if ($this->isEdit && $this->requisition) {
             $this->requisition->update($data);
-            $requisition = $this->requisition;
-
             // Delete existing items and recreate
-            $requisition->items()->delete();
+            $this->requisition->items()->delete();
         } else {
-            $requisition = PurchaseRequisition::create($data);
+            $this->requisition = PurchaseRequisition::create($data);
         }
 
         // Create items
         foreach ($this->items as $item) {
             PurchaseRequisitionItem::create([
-                'purchase_requisition_id' => $requisition->id,
+                'purchase_requisition_id' => $this->requisition->id,
                 'product_id' => $item['product_id'],
                 'quantity' => $item['quantity'],
                 'estimated_unit_price' => $item['unit_price'],
@@ -167,7 +166,7 @@ class Form extends Component
         return redirect()->route('purchases.requisitions.index');
     }
 
-    public function submit(): void
+    public function submit(): RedirectResponse
     {
         $this->save();
 
