@@ -17,7 +17,7 @@
                 <label class="block text-sm font-medium text-slate-700">
                     {{ __('Name') }}
                 </label>
-                <input type="text" wire:model.defer="form.name" class="erp-input">
+                <input type="text" wire:model="form.name" class="erp-input">
                 @error('form.name')
                     <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
                 @enderror
@@ -27,7 +27,7 @@
                 <label class="block text-sm font-medium text-slate-700">
                     {{ __('Email') }}
                 </label>
-                <input type="email" wire:model.defer="form.email" class="erp-input">
+                <input type="email" wire:model="form.email" class="erp-input">
                 @error('form.email')
                     <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
                 @enderror
@@ -37,7 +37,7 @@
                 <label class="block text-sm font-medium text-slate-700">
                     {{ __('Phone') }}
                 </label>
-                <input type="text" wire:model.defer="form.phone" class="erp-input">
+                <input type="text" wire:model="form.phone" class="erp-input">
                 @error('form.phone')
                     <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
                 @enderror
@@ -47,7 +47,7 @@
                 <label class="block text-sm font-medium text-slate-700">
                     {{ __('Username') }}
                 </label>
-                <input type="text" wire:model.defer="form.username" class="erp-input">
+                <input type="text" wire:model="form.username" class="erp-input">
                 @error('form.username')
                     <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
                 @enderror
@@ -57,7 +57,7 @@
                 <label class="block text-sm font-medium text-slate-700">
                     {{ __('Branch') }}
                 </label>
-                <select wire:model.defer="form.branch_id" class="erp-input">
+                <select wire:model="form.branch_id" class="erp-input">
                     <option value="">{{ __('Select branch') }}</option>
                     @foreach($branches as $branch)
                         <option value="{{ $branch->id }}">{{ $branch->name }}</option>
@@ -72,7 +72,7 @@
                 <label class="block text-sm font-medium text-slate-700">
                     {{ __('Language') }}
                 </label>
-                <select wire:model.defer="form.locale" class="erp-input">
+                <select wire:model="form.locale" class="erp-input">
                     <option value="ar">العربية (Arabic)</option>
                     <option value="en">English</option>
                 </select>
@@ -85,7 +85,7 @@
                 <label class="block text-sm font-medium text-slate-700">
                     {{ __('Timezone') }}
                 </label>
-                <select wire:model.defer="form.timezone" class="erp-input">
+                <select wire:model="form.timezone" class="erp-input">
                     <option value="Africa/Cairo">Africa/Cairo (EET, UTC+2)</option>
                     <option value="Asia/Riyadh">Asia/Riyadh (AST, UTC+3)</option>
                     <option value="Asia/Dubai">Asia/Dubai (GST, UTC+4)</option>
@@ -111,7 +111,7 @@
                 <label class="block text-sm font-medium text-slate-700">
                     {{ $userId ? __('New Password (optional)') : __('Password') }}
                 </label>
-                <input type="password" wire:model.defer="form.password" class="erp-input">
+                <input type="password" wire:model="form.password" class="erp-input">
                 @error('form.password')
                     <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
                 @enderror
@@ -121,7 +121,7 @@
                 <label class="block text-sm font-medium text-slate-700">
                     {{ __('Confirm Password') }}
                 </label>
-                <input type="password" wire:model.defer="form.password_confirmation" class="erp-input">
+                <input type="password" wire:model="form.password_confirmation" class="erp-input">
             </div>
 
             <div class="space-y-1">
@@ -152,7 +152,7 @@
                             <input type="checkbox"
                                    class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
                                    value="{{ $role['id'] }}"
-                                   wire:model.defer="selectedRoles">
+                                   wire:model="selectedRoles">
                             <span>{{ $role['name'] }}</span>
                         </label>
                     @endforeach

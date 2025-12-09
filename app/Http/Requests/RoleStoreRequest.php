@@ -34,7 +34,7 @@ class RoleStoreRequest extends FormRequest
     protected function prepareForValidation(): void
     {
         $this->merge([
-            'guard_name' => $this->guard_name ?? 'web',
+            'guard_name' => $this->guard_name ?? 'api',
         ]);
     }
 }

@@ -19,6 +19,7 @@ class Form extends Component
 
     // Form fields
     public string $name = '';
+    public string $code = '';
     public string $description = '';
     public ?int $client_id = null;
     public ?int $manager_id = null;
@@ -35,7 +36,7 @@ class Form extends Component
             $this->project = Project::findOrFail($id);
             $this->projectId = $id;
             $this->fill($this->project->only([
-                'name', 'description', 'client_id', 'manager_id',
+                'name', 'code', 'description', 'client_id', 'manager_id',
                 'start_date', 'end_date', 'status', 'budget_amount', 'notes'
             ]));
         } else {
@@ -47,6 +48,7 @@ class Form extends Component
     {
         return [
             'name' => ['required', 'string', 'max:255'],
+            'code' => ['required', 'string', 'max:50', 'unique:projects,code,' . $this->project?->id],
             'description' => ['required', 'string'],
             'client_id' => ['nullable', 'exists:clients,id'],
             'manager_id' => ['nullable', 'exists:users,id'],
@@ -64,14 +66,14 @@ class Form extends Component
 
         if ($this->project) {
             $this->project->update($this->only([
-                'name', 'description', 'client_id', 'manager_id',
+                'name', 'code', 'description', 'client_id', 'manager_id',
                 'start_date', 'end_date', 'status', 'budget_amount', 'notes'
             ]));
             session()->flash('success', __('Project updated successfully'));
         } else {
             Project::create(array_merge(
                 $this->only([
-                    'name', 'description', 'client_id', 'manager_id',
+                    'name', 'code', 'description', 'client_id', 'manager_id',
                     'start_date', 'end_date', 'status', 'budget_amount', 'notes'
                 ]),
                 ['created_by' => auth()->id()]
