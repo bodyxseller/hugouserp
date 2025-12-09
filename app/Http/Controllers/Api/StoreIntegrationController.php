@@ -253,9 +253,13 @@ class StoreIntegrationController extends Controller
 
         $validated = $request->validate([
             'status' => ['required', 'string', 'max:50'],
+            'branch_id' => ['required', 'integer', 'exists:branches,id'],
         ]);
 
-        $order = StoreOrder::query()->where('external_order_id', $externalId)->firstOrFail();
+        $order = StoreOrder::query()
+            ->where('external_order_id', $externalId)
+            ->where('branch_id', $validated['branch_id'])
+            ->firstOrFail();
 
         $order->update([
             'status' => $validated['status'],

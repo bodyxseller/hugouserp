@@ -31,7 +31,7 @@ class OrdersSortValidationTest extends TestCase
         // Create a test user
         $this->user = User::factory()->create([
             'email' => 'test@example.com',
-            'password' => bcrypt('password'),
+            'password' => \Illuminate\Support\Facades\Hash::make('password'),
         ]);
 
         Sanctum::actingAs($this->user);
