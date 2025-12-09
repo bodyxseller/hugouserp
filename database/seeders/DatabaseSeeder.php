@@ -17,13 +17,17 @@ class DatabaseSeeder extends Seeder
             SystemSettingsSeeder::class,
             BranchesSeeder::class,
             ModulesSeeder::class,
+            ModuleArchitectureSeeder::class,
+            ModuleNavigationSeeder::class,
             RolesAndPermissionsSeeder::class,
             UsersSeeder::class,
             AdvancedReportPermissionsSeeder::class,
             CurrencySeeder::class,
             CurrencyRatesSeeder::class,
+            ChartOfAccountsSeeder::class,
             VehicleModelsSeeder::class,
             ReportTemplatesSeeder::class,
+            PreConfiguredModulesSeeder::class,
         ]);
     }
 }

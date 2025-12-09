@@ -64,25 +64,25 @@
                                         <tr class="hover:bg-emerald-50/40 dark:hover:bg-slate-800/50 transition-colors">
                                             <td class="px-3 py-2 align-top">
                                                 <input type="text"
-                                                       wire:model.defer="rows.{{ $index }}.key"
+                                                       wire:model="rows.{{ $index }}.key"
                                                        placeholder="app.locale"
                                                        class="w-full rounded-md border border-slate-200/80 dark:border-slate-700/70 bg-white/80 dark:bg-slate-900/80 px-2 py-1 text-xs sm:text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500">
                                             </td>
                                             <td class="px-3 py-2 align-top">
                                                 <input type="text"
-                                                       wire:model.defer="rows.{{ $index }}.value"
+                                                       wire:model="rows.{{ $index }}.value"
                                                        placeholder="value"
                                                        class="w-full rounded-md border border-slate-200/80 dark:border-slate-700/70 bg-white/80 dark:bg-slate-900/80 px-2 py-1 text-xs sm:text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500">
                                             </td>
                                             <td class="px-3 py-2 align-top">
                                                 <input type="text"
-                                                       wire:model.defer="rows.{{ $index }}.group"
+                                                       wire:model="rows.{{ $index }}.group"
                                                        placeholder="general"
                                                        class="w-full rounded-md border border-slate-200/80 dark:border-slate-700/70 bg-white/80 dark:bg-slate-900/80 px-2 py-1 text-xs sm:text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500">
                                             </td>
                                             <td class="px-3 py-2 text-center align-top">
                                                 <input type="checkbox"
-                                                       wire:model.defer="rows.{{ $index }}.is_public"
+                                                       wire:model="rows.{{ $index }}.is_public"
                                                        class="h-3 w-3 sm:h-4 sm:w-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500">
                                             </td>
                                             <td class="px-3 py-2 align-top text-end">

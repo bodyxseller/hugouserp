@@ -56,14 +56,14 @@
                         @foreach ($rows as $index => $row)
                             <tr class="hover:bg-emerald-50/40">
                                 <td class="px-3 py-2 align-top">
-                                    <input type="text" wire:model.defer="rows.{{ $index }}.key"
+                                    <input type="text" wire:model="rows.{{ $index }}.key"
                                            class="erp-input text-xs">
                                     @error('rows.' . $index . '.key')
                                         <p class="mt-1 text-[0.7rem] text-red-600">{{ $message }}</p>
                                     @enderror
                                 </td>
                                 <td class="px-3 py-2 align-top">
-                                    <input type="text" wire:model.defer="rows.{{ $index }}.value"
+                                    <input type="text" wire:model="rows.{{ $index }}.value"
                                            class="erp-input text-xs">
                                 </td>
                                 <td class="px-3 py-2 align-top text-end">

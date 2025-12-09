@@ -17,7 +17,7 @@
                 <label class="block text-sm font-medium text-slate-700 dark:text-slate-200">
                     {{ __('Unit') }}
                 </label>
-                <select wire:model.defer="form.unit_id" class="erp-input">
+                <select wire:model="form.unit_id" class="erp-input">
                     @foreach($availableUnits as $option)
                         <option value="{{ $option['id'] }}">{{ $option['label'] }}</option>
                     @endforeach
@@ -31,7 +31,7 @@
                 <label class="block text-sm font-medium text-slate-700 dark:text-slate-200">
                     {{ __('Tenant') }}
                 </label>
-                <select wire:model.defer="form.tenant_id" class="erp-input">
+                <select wire:model="form.tenant_id" class="erp-input">
                     @foreach($availableTenants as $option)
                         <option value="{{ $option['id'] }}">{{ $option['label'] }}</option>
                     @endforeach
@@ -45,7 +45,7 @@
                 <label class="block text-sm font-medium text-slate-700 dark:text-slate-200">
                     {{ __('Status') }}
                 </label>
-                <select wire:model.defer="form.status" class="erp-input">
+                <select wire:model="form.status" class="erp-input">
                     <option value="draft">{{ __('Draft') }}</option>
                     <option value="active">{{ __('Active') }}</option>
                     <option value="ended">{{ __('Ended') }}</option>
@@ -98,7 +98,7 @@
                     {{ __('End date') }}
                     <span class="text-xs text-slate-500">({{ __('auto-calculated') }})</span>
                 </label>
-                <input type="date" wire:model.defer="form.end_date" class="erp-input bg-slate-100" readonly>
+                <input type="date" wire:model="form.end_date" class="erp-input bg-slate-100" readonly>
                 @error('form.end_date')
                     <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
                 @enderror
@@ -108,7 +108,7 @@
                 <label class="block text-sm font-medium text-slate-700 dark:text-slate-200">
                     {{ __('Monthly rent') }}
                 </label>
-                <input type="number" step="0.01" min="0" wire:model.defer="form.rent" class="erp-input">
+                <input type="number" step="0.01" min="0" wire:model="form.rent" class="erp-input">
                 @error('form.rent')
                     <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
                 @enderror
@@ -118,7 +118,7 @@
                 <label class="block text-sm font-medium text-slate-700 dark:text-slate-200">
                     {{ __('Security deposit') }}
                 </label>
-                <input type="number" step="0.01" min="0" wire:model.defer="form.deposit" class="erp-input">
+                <input type="number" step="0.01" min="0" wire:model="form.deposit" class="erp-input">
                 @error('form.deposit')
                     <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
                 @enderror
