@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Livewire\Inventory\Products;
 
 use App\Livewire\Concerns\HandlesErrors;
+use App\Models\Currency;
 use App\Models\Module;
 use App\Models\Product;
 use App\Models\ProductFieldValue;
@@ -38,20 +39,12 @@ class Form extends Component
         'barcode' => '',
         'price' => 0.0,
         'cost' => 0.0,
-        'price_currency' => 'EGP',
-        'cost_currency' => 'EGP',
+        'price_currency' => '',
+        'cost_currency' => '',
         'status' => 'active',
         'type' => 'stock',
         'branch_id' => 0,
         'module_id' => null,
-    ];
-
-    public array $currencies = [
-        'EGP' => 'Egyptian Pound (EGP)',
-        'USD' => 'US Dollar (USD)',
-        'EUR' => 'Euro (EUR)',
-        'SAR' => 'Saudi Riyal (SAR)',
-        'AED' => 'UAE Dirham (AED)',
     ];
 
     public array $dynamicSchema = [];
@@ -74,6 +67,12 @@ class Form extends Component
         $user = Auth::user();
         $this->productId = $product;
         $this->form['branch_id'] = (int) ($user?->branch_id ?? 1);
+        
+        // Set default currency from base currency
+        $baseCurrency = Currency::getBaseCurrency();
+        $defaultCurrency = $baseCurrency?->code ?? 'USD';
+        $this->form['price_currency'] = $defaultCurrency;
+        $this->form['cost_currency'] = $defaultCurrency;
 
         if ($this->productId) {
             $p = Product::with(['fieldValues.field'])->findOrFail($this->productId);
@@ -83,8 +82,8 @@ class Form extends Component
             $this->form['barcode'] = $p->barcode ?? '';
             $this->form['price'] = (float) ($p->default_price ?? $p->price ?? 0);
             $this->form['cost'] = (float) ($p->standard_cost ?? $p->cost ?? 0);
-            $this->form['price_currency'] = $p->price_currency ?? 'EGP';
-            $this->form['cost_currency'] = $p->cost_currency ?? 'EGP';
+            $this->form['price_currency'] = $p->price_currency ?? $defaultCurrency;
+            $this->form['cost_currency'] = $p->cost_currency ?? $defaultCurrency;
             $this->form['status'] = (string) ($p->status ?? 'active');
             $this->form['type'] = (string) ($p->type ?? 'stock');
             $this->form['branch_id'] = (int) ($p->branch_id ?? $this->form['branch_id']);
@@ -178,6 +177,12 @@ class Form extends Component
     protected function rules(): array
     {
         $id = $this->productId;
+        
+        // Get valid currency codes from database
+        $validCurrencies = Currency::active()->pluck('code')->toArray();
+        if (empty($validCurrencies)) {
+            $validCurrencies = ['USD', 'EUR', 'GBP']; // Fallback if no currencies in DB
+        }
 
         $rules = [
             'form.name' => ['required', 'string', 'max:255'],
@@ -195,8 +200,8 @@ class Form extends Component
             ],
             'form.price' => ['required', 'numeric', 'min:0'],
             'form.cost' => ['nullable', 'numeric', 'min:0'],
-            'form.price_currency' => ['required', 'string', Rule::in(['EGP', 'USD', 'EUR', 'SAR', 'AED', 'GBP', 'KWD'])],
-            'form.cost_currency' => ['required', 'string', Rule::in(['EGP', 'USD', 'EUR', 'SAR', 'AED', 'GBP', 'KWD'])],
+            'form.price_currency' => ['required', 'string', Rule::in($validCurrencies)],
+            'form.cost_currency' => ['required', 'string', Rule::in($validCurrencies)],
             'form.status' => ['required', 'string', Rule::in(['active', 'inactive'])],
             'form.type' => ['required', 'string', Rule::in(['stock', 'service'])],
             'form.branch_id' => ['required', 'integer'],
@@ -319,9 +324,13 @@ class Form extends Component
                 ->orderBy('sort_order')
                 ->get();
         }
+        
+        // Load currencies from database
+        $currencies = Currency::active()->ordered()->get(['code', 'name', 'symbol']);
 
         return view('livewire.inventory.products.form', [
             'modules' => $modules,
+            'currencies' => $currencies,
         ]);
     }
 }
