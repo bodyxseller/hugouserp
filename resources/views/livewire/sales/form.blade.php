@@ -46,7 +46,7 @@
 
                 <div>
                     <label class="erp-label">{{ __('Reference Number') }}</label>
-                    <input type="text" wire:model="reference_number" class="erp-input" placeholder="{{ __('e.g., SO-12345') }}">
+                    <input type="text" wire:model="reference_no" class="erp-input" placeholder="{{ __('e.g., SO-12345') }}">
                 </div>
 
                 <div>

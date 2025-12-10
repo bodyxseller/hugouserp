@@ -104,6 +104,59 @@
             </div>
         </div>
 
+        {{-- Category and Unit Section --}}
+        <div class="rounded-2xl border border-slate-200 bg-white/80 p-4 shadow-sm shadow-emerald-500/10">
+            <h2 class="text-sm font-semibold text-slate-800 mb-3 flex items-center gap-2">
+                <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                </svg>
+                {{ __('Classification') }}
+            </h2>
+            <div class="grid gap-4 sm:grid-cols-2">
+                <div class="space-y-1">
+                    <div class="flex items-center justify-between">
+                        <label class="block text-sm font-medium text-slate-700">
+                            {{ __('Category') }}
+                        </label>
+                        <x-quick-add-link 
+                            :route="route('app.inventory.categories.index')" 
+                            label="{{ __('Add Category') }}"
+                            permission="inventory.categories.view" />
+                    </div>
+                    <select wire:model="form.category_id" class="erp-input">
+                        <option value="">{{ __('Select Category') }}</option>
+                        @foreach($categories as $category)
+                            <option value="{{ $category->id }}">{{ $category->name }}</option>
+                        @endforeach
+                    </select>
+                    @error('form.category_id')
+                        <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <div class="space-y-1">
+                    <div class="flex items-center justify-between">
+                        <label class="block text-sm font-medium text-slate-700">
+                            {{ __('Unit of Measure') }}
+                        </label>
+                        <x-quick-add-link 
+                            :route="route('app.inventory.units.index')" 
+                            label="{{ __('Add Unit') }}"
+                            permission="inventory.units.view" />
+                    </div>
+                    <select wire:model="form.unit_id" class="erp-input">
+                        <option value="">{{ __('Select Unit') }}</option>
+                        @foreach($units as $unit)
+                            <option value="{{ $unit->id }}">{{ $unit->name }} ({{ $unit->symbol }})</option>
+                        @endforeach
+                    </select>
+                    @error('form.unit_id')
+                        <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
+            </div>
+        </div>
+
         {{-- Pricing Section --}}
         <div class="rounded-2xl border border-slate-200 bg-white/80 p-4 shadow-sm shadow-emerald-500/10">
             <h2 class="text-sm font-semibold text-slate-800 mb-3 flex items-center gap-2">

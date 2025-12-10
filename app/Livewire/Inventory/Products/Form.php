@@ -45,6 +45,8 @@ class Form extends Component
         'type' => 'stock',
         'branch_id' => 0,
         'module_id' => null,
+        'category_id' => null,
+        'unit_id' => null,
     ];
 
     public array $dynamicSchema = [];
@@ -93,6 +95,8 @@ class Form extends Component
             $this->form['type'] = (string) ($p->type ?? 'stock');
             $this->form['branch_id'] = (int) ($p->branch_id ?? $this->form['branch_id']);
             $this->form['module_id'] = $p->module_id;
+            $this->form['category_id'] = $p->category_id;
+            $this->form['unit_id'] = $p->unit_id;
             $this->form['thumbnail'] = $p->thumbnail ?? '';
             $this->selectedModuleId = $p->module_id;
 
@@ -211,6 +215,8 @@ class Form extends Component
             'form.type' => ['required', 'string', Rule::in(['stock', 'service'])],
             'form.branch_id' => ['required', 'integer'],
             'form.module_id' => ['nullable', 'integer', 'exists:modules,id'],
+            'form.category_id' => ['nullable', 'integer', 'exists:product_categories,id'],
+            'form.unit_id' => ['nullable', 'integer', 'exists:units_of_measure,id'],
             'thumbnailFile' => ['nullable', 'image', 'max:2048'],
         ];
 
@@ -256,6 +262,8 @@ class Form extends Component
                 'status' => $this->form['status'],
                 'type' => $this->form['type'],
                 'branch_id' => $this->form['branch_id'],
+                'category_id' => $this->form['category_id'] ?: null,
+                'unit_id' => $this->form['unit_id'] ?: null,
                 'custom_fields' => $this->dynamicData,
             ];
 
@@ -334,6 +342,8 @@ class Form extends Component
         return view('livewire.inventory.products.form', [
             'modules' => $modules,
             'currencies' => $this->availableCurrencies,
+            'categories' => \App\Models\ProductCategory::active()->orderBy('name')->get(['id', 'name']),
+            'units' => \App\Models\UnitOfMeasure::active()->orderBy('name')->get(['id', 'name', 'symbol']),
         ]);
     }
 }

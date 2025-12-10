@@ -28,7 +28,7 @@ class Form extends Component
 
     public string $warehouse_id = '';
 
-    public string $reference_number = '';
+    public string $reference_no = '';
 
     public string $status = 'completed';
 
@@ -55,7 +55,7 @@ class Form extends Component
         return [
             'customer_id' => 'nullable|exists:customers,id',
             'warehouse_id' => 'nullable|exists:warehouses,id',
-            'reference_number' => 'nullable|string|max:100',
+            'reference_no' => 'nullable|string|max:100',
             'status' => 'required|in:draft,pending,completed,cancelled,refunded',
             'currency' => 'nullable|string|max:3',
             'notes' => 'nullable|string',
@@ -79,7 +79,7 @@ class Form extends Component
             $this->editMode = true;
             $this->customer_id = (string) ($sale->customer_id ?? '');
             $this->warehouse_id = (string) ($sale->warehouse_id ?? '');
-            $this->reference_number = $sale->reference_number ?? '';
+            $this->reference_no = $sale->reference_no ?? '';
             $this->status = $sale->status ?? 'completed';
             $this->currency = $sale->currency ?? 'EGP';
             $this->notes = $sale->notes ?? '';
@@ -192,7 +192,7 @@ class Form extends Component
                         'branch_id' => $user->branch_id ?? $user->branches()->first()?->id ?? 1,
                         'customer_id' => $this->customer_id ?: null,
                         'warehouse_id' => $this->warehouse_id ?: null,
-                        'reference_number' => $this->reference_number,
+                        'reference_no' => $this->reference_no,
                         'status' => $this->status,
                         'currency' => $this->currency,
                         'notes' => $this->notes,

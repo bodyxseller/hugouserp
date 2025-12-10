@@ -243,6 +243,8 @@ class ProductService implements ProductServiceInterface
                         'type' => $module->is_service ? 'service' : ($data['type'] ?? 'stock'),
                         'branch_id' => $data['branch_id'],
                         'module_id' => $module->id,
+                        'category_id' => $data['category_id'] ?? null,
+                        'unit_id' => $data['unit_id'] ?? null,
                         'created_by' => auth()->id(),
                     ];
 
@@ -307,6 +309,8 @@ class ProductService implements ProductServiceInterface
                         'cost_currency' => $data['cost_currency'] ?? $product->cost_currency,
                         'status' => $data['status'] ?? $product->status,
                         'type' => $data['type'] ?? $product->type,
+                        'category_id' => $data['category_id'] ?? $product->category_id,
+                        'unit_id' => $data['unit_id'] ?? $product->unit_id,
                         'updated_by' => auth()->id(),
                     ];
 

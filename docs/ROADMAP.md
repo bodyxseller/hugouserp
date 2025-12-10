@@ -19,9 +19,18 @@ This document outlines planned improvements and features for HugousERP, organize
 - Fixed Product form to load currencies from database (not hardcoded)
 - Optimized currency loading with caching to avoid repeated DB queries
 - Fixed ProductObserver to reference correct column names (default_price, standard_cost)
-- Fixed ProductStoreRequest and ProductUpdateRequest validation (categories → product_categories)
+- Fixed ProductUpdateRequest validation (categories → product_categories)
 - Removed non-existent returns/create routes for Sales and Purchases
 - Fixed permission naming inconsistencies (rentals→rental, hr→hrm)
+
+### Settings, Forms, and DB Alignment ✅ (December 2025)
+- Added unit_id field and unit() relationship to Product model
+- Added category and unit select fields to Product form with quick-add links
+- Fixed Sales form field name consistency (reference_number → reference_no)
+- Added category_id and unit_id support to ProductService
+- Verified all forms use Currency model correctly (Sales, Purchases, Products)
+- Ensured all quick-add routes exist and permissions are aligned
+- Validated all table/column names match between migrations and code
 
 ## High Priority
 
