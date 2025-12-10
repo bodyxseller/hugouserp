@@ -24,7 +24,7 @@ class ProductUpdateRequest extends FormRequest
             'price' => ['sometimes', 'numeric', 'min:0'],
             'cost' => ['sometimes', 'numeric', 'min:0'],
             'description' => ['nullable', 'string'],
-            'category_id' => ['nullable', 'exists:categories,id'],
+            'category_id' => ['nullable', 'exists:product_categories,id'],
             'tax_id' => ['nullable', 'exists:taxes,id'],
         ];
     }

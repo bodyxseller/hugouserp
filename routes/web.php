@@ -175,10 +175,6 @@ Route::middleware('auth')->group(function () {
             ->name('returns.index')
             ->middleware('can:sales.return');
 
-        Route::get('/returns/create', \App\Livewire\Sales\Returns\Form::class)
-            ->name('returns.create')
-            ->middleware('can:sales.return');
-
         Route::get('/analytics', \App\Livewire\Reports\SalesAnalytics::class)
             ->name('analytics')
             ->middleware('can:sales.view-reports');
@@ -204,10 +200,6 @@ Route::middleware('auth')->group(function () {
 
         Route::get('/returns', \App\Livewire\Purchases\Returns\Index::class)
             ->name('returns.index')
-            ->middleware('can:purchases.return');
-
-        Route::get('/returns/create', \App\Livewire\Purchases\Returns\Form::class)
-            ->name('returns.create')
             ->middleware('can:purchases.return');
 
         // Purchase requisitions
@@ -369,12 +361,12 @@ Route::middleware('auth')->group(function () {
         // Properties
         Route::get('/properties', \App\Livewire\Rental\Properties\Index::class)
             ->name('properties.index')
-            ->middleware('can:rentals.view');
+            ->middleware('can:rental.view');
 
         // Tenants
         Route::get('/tenants', \App\Livewire\Rental\Tenants\Index::class)
             ->name('tenants.index')
-            ->middleware('can:rentals.view');
+            ->middleware('can:rental.view');
 
         // Contracts
         Route::get('/contracts', RentalContractsIndex::class)
@@ -478,7 +470,7 @@ Route::middleware('auth')->group(function () {
         // Reports
         Route::get('/reports', HrmReportsDashboard::class)
             ->name('reports')
-            ->middleware('can:hr.view-reports');
+            ->middleware('can:hrm.view-reports');
     });
 
     // BANKING MODULE

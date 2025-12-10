@@ -9,11 +9,19 @@ This document outlines planned improvements and features for HugousERP, organize
 - Refactored `SalesAnalytics` to use portable date/time operations
 - Eliminated PostgreSQL-specific EXTRACT() and DATE_TRUNC() usage
 
-### Code Cleanup ✅
+### Code Cleanup Phase 1 ✅
 - Removed 18 unused classes (2 events, 3 jobs, 2 traits, 2 observers, 1 exception, 4 rules, 4 policies)
 - Eliminated ~800+ lines of dead code
 - Archived 45 AI-generated documentation files
 - Retained only 6 core documentation files + ROADMAP
+
+### Code Cleanup Phase 2 ✅
+- Fixed Product form to load currencies from database (not hardcoded)
+- Optimized currency loading with caching to avoid repeated DB queries
+- Fixed ProductObserver to reference correct column names (default_price, standard_cost)
+- Fixed ProductStoreRequest and ProductUpdateRequest validation (categories → product_categories)
+- Removed non-existent returns/create routes for Sales and Purchases
+- Fixed permission naming inconsistencies (rentals→rental, hr→hrm)
 
 ## High Priority
 
