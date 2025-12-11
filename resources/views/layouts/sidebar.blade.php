@@ -370,11 +370,11 @@
         
         {{-- System Settings --}}
         @if($canAccess('settings.view'))
-        <a href="{{ route('admin.settings.system') }}"
-           class="sidebar-link bg-gradient-to-r from-sky-500 to-sky-600 {{ $isActive('admin.settings.system') || $isActive('admin.settings.branch') ? 'active ring-2 ring-white/30' : '' }}">
+        <a href="{{ route('admin.settings') }}"
+           class="sidebar-link bg-gradient-to-r from-sky-500 to-sky-600 {{ $isActive('admin.settings') ? 'active ring-2 ring-white/30' : '' }}">
             <span class="text-lg">⚙️</span>
             <span class="text-sm font-medium">{{ __('System Settings') }}</span>
-            @if($isActive('admin.settings.system') || $isActive('admin.settings.branch'))
+            @if($isActive('admin.settings'))
                 <span class="ms-auto w-2 h-2 rounded-full bg-white animate-pulse"></span>
             @endif
         </a>
@@ -430,11 +430,11 @@
 
         {{-- Translation Manager --}}
         @if($canAccess('settings.translations.manage'))
-        <a href="{{ route('admin.settings.translations') }}"
-           class="sidebar-link bg-gradient-to-r from-cyan-500 to-cyan-600 {{ $isActive('admin.settings.translations') ? 'active ring-2 ring-white/30' : '' }}">
+        <a href="{{ route('admin.settings') }}?tab=translations"
+           class="sidebar-link bg-gradient-to-r from-cyan-500 to-cyan-600 {{ $isActive('admin.settings') ? 'active ring-2 ring-white/30' : '' }}">
             <span class="text-lg">🌍</span>
             <span class="text-sm font-medium">{{ __('Translation Manager') }}</span>
-            @if($isActive('admin.settings.translations'))
+            @if($isActive('admin.settings'))
                 <span class="ms-auto w-2 h-2 rounded-full bg-white animate-pulse"></span>
             @endif
         </a>
@@ -442,11 +442,11 @@
 
         {{-- Advanced Settings --}}
         @if($canAccess('settings.view'))
-        <a href="{{ route('admin.settings.advanced') }}"
-           class="sidebar-link bg-gradient-to-r from-rose-500 to-rose-600 {{ $isActive('admin.settings.advanced') ? 'active ring-2 ring-white/30' : '' }}">
+        <a href="{{ route('admin.settings') }}?tab=advanced"
+           class="sidebar-link bg-gradient-to-r from-rose-500 to-rose-600 {{ $isActive('admin.settings') ? 'active ring-2 ring-white/30' : '' }}">
             <span class="text-lg">🔒</span>
             <span class="text-sm font-medium">{{ __('Advanced Settings') }}</span>
-            @if($isActive('admin.settings.advanced'))
+            @if($isActive('admin.settings'))
                 <span class="ms-auto w-2 h-2 rounded-full bg-white animate-pulse"></span>
             @endif
         </a>
@@ -455,16 +455,16 @@
         {{-- Currency Management --}}
         @if($canAccess('settings.currency.manage'))
         <div class="space-y-1">
-            <a href="{{ route('admin.settings.currencies') }}"
-               class="sidebar-link bg-gradient-to-r from-yellow-500 to-yellow-600 {{ $isActive('admin.settings.currencies') ? 'active ring-2 ring-white/30' : '' }}">
+            <a href="{{ route('admin.currencies.index') }}"
+               class="sidebar-link bg-gradient-to-r from-yellow-500 to-yellow-600 {{ $isActive('admin.currencies') ? 'active ring-2 ring-white/30' : '' }}">
                 <span class="text-lg">💰</span>
                 <span class="text-sm font-medium">{{ __('Currency Management') }}</span>
-                @if($isActive('admin.settings.currencies'))
+                @if($isActive('admin.currencies'))
                     <span class="ms-auto w-2 h-2 rounded-full bg-white animate-pulse"></span>
                 @endif
             </a>
-            <a href="{{ route('admin.settings.currency-rates') }}"
-               class="sidebar-link-secondary ms-4 {{ $isActive('admin.settings.currency-rates') ? 'active' : '' }}">
+            <a href="{{ route('admin.currency-rates.index') }}"
+               class="sidebar-link-secondary ms-4 {{ $isActive('admin.currency-rates') ? 'active' : '' }}">
                 <span class="text-base">💱</span>
                 <span class="text-sm">{{ __('Exchange Rates') }}</span>
             </a>
@@ -478,15 +478,15 @@
         <p class="px-3 text-xs uppercase tracking-wide text-slate-500 mb-2">{{ __('Reports') }}</p>
 
         @if($canAccess('reports.hub.view'))
-        <a href="{{ route('admin.reports.hub') }}"
-           class="sidebar-link-secondary {{ $isActive('admin.reports.hub') ? 'active' : '' }}">
+        <a href="{{ route('admin.reports.index') }}"
+           class="sidebar-link-secondary {{ $isActive('admin.reports.index') ? 'active' : '' }}">
             <span class="text-base">📊</span>
             <span class="text-sm">{{ __('Reports Hub') }}</span>
         </a>
         @endif
 
         @if($canAccess('reports.pos.charts'))
-        <a href="{{ route('admin.reports.pos.charts') }}"
+        <a href="{{ route('admin.reports.pos') }}"
            class="sidebar-link-secondary {{ $isActive('admin.reports.pos') ? 'active' : '' }}">
             <span class="text-base">📈</span>
             <span class="text-sm">{{ __('Sales Report') }}</span>
@@ -494,7 +494,7 @@
         @endif
 
         @if($canAccess('reports.inventory.charts'))
-        <a href="{{ route('admin.reports.inventory.charts') }}"
+        <a href="{{ route('admin.reports.inventory') }}"
            class="sidebar-link-secondary {{ $isActive('admin.reports.inventory') ? 'active' : '' }}">
             <span class="text-base">📦</span>
             <span class="text-sm">{{ __('Inventory Report') }}</span>
@@ -510,8 +510,8 @@
         @endif
 
         @if($canAccess('store.reports.dashboard'))
-        <a href="{{ route('admin.store.dashboard') }}"
-           class="sidebar-link-secondary {{ $isActive('admin.store.dashboard') ? 'active' : '' }}">
+        <a href="{{ route('admin.stores.orders') }}"
+           class="sidebar-link-secondary {{ $isActive('admin.stores.orders') ? 'active' : '' }}">
             <span class="text-base">🏪</span>
             <span class="text-sm">{{ __('Store Dashboard') }}</span>
         </a>
@@ -526,8 +526,8 @@
         @endif
 
         @if($canAccess('reports.scheduled.manage'))
-        <a href="{{ route('admin.reports.schedules') }}"
-           class="sidebar-link-secondary {{ $isActive('admin.reports.schedules') ? 'active' : '' }}">
+        <a href="{{ route('admin.reports.scheduled') }}"
+           class="sidebar-link-secondary {{ $isActive('admin.reports.scheduled') ? 'active' : '' }}">
             <span class="text-base">📅</span>
             <span class="text-sm">{{ __('Scheduled Reports') }}</span>
         </a>

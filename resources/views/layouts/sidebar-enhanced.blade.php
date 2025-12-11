@@ -285,31 +285,31 @@
             'children' => [
                 [
                     'label' => __('System Settings'),
-                    'route' => 'admin.settings.system',
+                    'route' => 'admin.settings',
                     'permission' => 'settings.view',
                     'icon' => '⚙️',
                 ],
                 [
                     'label' => __('Advanced Settings'),
-                    'route' => 'admin.settings.advanced',
+                    'route' => 'admin.settings',
                     'permission' => 'settings.view',
                     'icon' => '🔒',
                 ],
                 [
                     'label' => __('Translation Manager'),
-                    'route' => 'admin.settings.translations',
+                    'route' => 'admin.settings',
                     'permission' => 'settings.translations.manage',
                     'icon' => '🌍',
                 ],
                 [
                     'label' => __('Currency Management'),
-                    'route' => 'admin.settings.currencies',
+                    'route' => 'admin.currencies.index',
                     'permission' => 'settings.currency.manage',
                     'icon' => '💰',
                 ],
                 [
                     'label' => __('Exchange Rates'),
-                    'route' => 'admin.settings.currency-rates',
+                    'route' => 'admin.currency-rates.index',
                     'permission' => 'settings.currency.manage',
                     'icon' => '💱',
                 ],
@@ -320,31 +320,31 @@
     $reportsSection = [
         [
             'label' => __('Reports Hub'),
-            'route' => 'admin.reports.hub',
+            'route' => 'admin.reports.index',
             'permission' => 'reports.hub.view',
             'icon' => '📊',
         ],
         [
             'label' => __('Sales Report'),
-            'route' => 'admin.reports.pos.charts',
+            'route' => 'admin.reports.pos',
             'permission' => 'reports.pos.charts',
             'icon' => '📈',
         ],
         [
             'label' => __('Inventory Report'),
-            'route' => 'admin.reports.inventory.charts',
+            'route' => 'admin.reports.inventory',
             'permission' => 'reports.inventory.charts',
             'icon' => '📦',
         ],
         [
             'label' => __('Sales Analytics'),
-            'route' => 'reports.sales-analytics',
+            'route' => 'app.sales.analytics',
             'permission' => 'reports.sales.view',
             'icon' => '📊',
         ],
         [
             'label' => __('Store Dashboard'),
-            'route' => 'admin.store.dashboard',
+            'route' => 'admin.stores.orders',
             'permission' => 'store.reports.dashboard',
             'icon' => '🏪',
         ],
@@ -356,7 +356,7 @@
         ],
         [
             'label' => __('Scheduled Reports'),
-            'route' => 'admin.reports.schedules',
+            'route' => 'admin.reports.scheduled',
             'permission' => 'reports.scheduled.manage',
             'icon' => '📅',
         ],

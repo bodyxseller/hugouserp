@@ -287,15 +287,15 @@
             </div>
             
             @if($canAccess('reports.hub.view'))
-            <a href="{{ route('admin.reports.hub') }}"
-               class="sidebar-link-secondary {{ $isActive('admin.reports.hub') ? 'active' : '' }}">
+            <a href="{{ route('admin.reports.index') }}"
+               class="sidebar-link-secondary {{ $isActive('admin.reports.index') ? 'active' : '' }}">
                 <span class="text-base">📊</span>
                 <span class="text-sm">{{ __('Reports Hub') }}</span>
             </a>
             @endif
             
             @if($canAccess('reports.pos.charts'))
-            <a href="{{ route('admin.reports.pos.charts') }}"
+            <a href="{{ route('admin.reports.pos') }}"
                class="sidebar-link-secondary {{ $isActive('admin.reports.pos') ? 'active' : '' }}">
                 <span class="text-base">📈</span>
                 <span class="text-sm">{{ __('Sales Reports') }}</span>
@@ -303,7 +303,7 @@
             @endif
             
             @if($canAccess('reports.inventory.charts'))
-            <a href="{{ route('admin.reports.inventory.charts') }}"
+            <a href="{{ route('admin.reports.inventory') }}"
                class="sidebar-link-secondary {{ $isActive('admin.reports.inventory') ? 'active' : '' }}">
                 <span class="text-base">📦</span>
                 <span class="text-sm">{{ __('Inventory Reports') }}</span>
@@ -329,8 +329,8 @@
             </div>
             
             @if($canAccess('settings.view'))
-            <a href="{{ route('admin.settings.system') }}"
-               class="sidebar-link-secondary {{ $isActive('admin.settings.system') || $isActive('admin.settings.branch') ? 'active' : '' }}">
+            <a href="{{ route('admin.settings') }}"
+               class="sidebar-link-secondary {{ $isActive('admin.settings') ? 'active' : '' }}">
                 <span class="text-base">⚙️</span>
                 <span class="text-sm">{{ __('General') }}</span>
             </a>
