@@ -248,7 +248,8 @@ return new class extends Migration
         try {
             $foreignKeys = Schema::getForeignKeys($table);
             foreach ($foreignKeys as $fk) {
-                if (strcasecmp($fk['name'], $foreignKey) === 0) {
+                $fkName = $fk['name'] ?? '';
+                if ($fkName && strcasecmp($fkName, $foreignKey) === 0) {
                     return true;
                 }
             }

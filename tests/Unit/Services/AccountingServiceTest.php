@@ -42,7 +42,7 @@ class AccountingServiceTest extends TestCase
     public function test_can_create_journal_entry(): void
     {
         $data = [
-            'date' => now(),
+            'entry_date' => now(),
             'reference' => 'JE-001',
             'description' => 'Test Entry',
             'branch_id' => $this->branch->id,
@@ -52,24 +52,29 @@ class AccountingServiceTest extends TestCase
                     'debit' => 1000,
                     'credit' => 0,
                 ],
+                [
+                    'account_id' => $this->account->id,
+                    'debit' => 0,
+                    'credit' => 1000,
+                ],
             ],
         ];
 
         $entry = $this->service->createJournalEntry($data);
 
         $this->assertInstanceOf(JournalEntry::class, $entry);
-        $this->assertEquals('JE-001', $entry->reference);
+        $this->assertEquals('JE-001', $entry->reference_number);
     }
 
     public function test_can_calculate_account_balance(): void
     {
         JournalEntry::create([
-            'date' => now(),
-            'reference' => 'JE-001',
+            'entry_date' => now(),
+            'reference_number' => 'JE-001',
             'description' => 'Test',
             'branch_id' => $this->branch->id,
             'status' => 'posted',
-        ])->items()->create([
+        ])->lines()->create([
             'account_id' => $this->account->id,
             'debit' => 1000,
             'credit' => 0,
