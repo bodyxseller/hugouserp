@@ -4,10 +4,22 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
+/**
+ * Create Module Management Tables
+ *
+ * This migration creates core module management tables and accounting foundation tables.
+ *
+ * NOTES:
+ * - module_branch and module_custom_fields are unique to this migration
+ * - accounts, journal_entries, and journal_entry_lines are created here and enhanced in 2025_12_07_150000
+ * - Duplicate definitions for customers, suppliers, purchases, sales, expenses, incomes have been REMOVED
+ *   (These are created in earlier migrations: 2025_11_15_000010 and 2025_11_15_000011)
+ */
 return new class extends Migration
 {
     public function up(): void
     {
+        // Module Management Tables
         if (! Schema::hasTable('module_branch')) {
             Schema::create('module_branch', function (Blueprint $table) {
                 $table->id();
@@ -40,186 +52,8 @@ return new class extends Migration
             });
         }
 
-        if (! Schema::hasTable('customers')) {
-            Schema::create('customers', function (Blueprint $table) {
-                $table->id();
-                $table->foreignId('branch_id')->nullable()->constrained('branches')->nullOnDelete();
-                $table->string('name');
-                $table->string('email')->nullable();
-                $table->string('phone')->nullable();
-                $table->string('phone2')->nullable();
-                $table->text('address')->nullable();
-                $table->string('city')->nullable();
-                $table->string('country')->nullable();
-                $table->string('tax_number')->nullable();
-                $table->string('company_name')->nullable();
-                $table->enum('customer_type', ['individual', 'company'])->default('individual');
-                $table->decimal('credit_limit', 15, 2)->default(0);
-                $table->decimal('balance', 15, 2)->default(0);
-                $table->boolean('is_active')->default(true);
-                $table->text('notes')->nullable();
-                $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
-                $table->timestamps();
-                $table->softDeletes();
-            });
-        }
 
-        if (! Schema::hasTable('suppliers')) {
-            Schema::create('suppliers', function (Blueprint $table) {
-                $table->id();
-                $table->foreignId('branch_id')->nullable()->constrained('branches')->nullOnDelete();
-                $table->string('name');
-                $table->string('email')->nullable();
-                $table->string('phone')->nullable();
-                $table->text('address')->nullable();
-                $table->string('city')->nullable();
-                $table->string('country')->nullable();
-                $table->string('tax_number')->nullable();
-                $table->string('company_name')->nullable();
-                $table->string('contact_person')->nullable();
-                $table->decimal('balance', 15, 2)->default(0);
-                $table->boolean('is_active')->default(true);
-                $table->text('notes')->nullable();
-                $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
-                $table->timestamps();
-                $table->softDeletes();
-            });
-        }
-
-        if (! Schema::hasTable('sales')) {
-            Schema::create('sales', function (Blueprint $table) {
-                $table->id();
-                $table->foreignId('branch_id')->constrained('branches');
-                $table->foreignId('customer_id')->nullable()->constrained('customers')->nullOnDelete();
-                $table->string('invoice_number')->unique();
-                $table->date('sale_date');
-                $table->decimal('subtotal', 15, 2)->default(0);
-                $table->decimal('discount', 15, 2)->default(0);
-                $table->decimal('tax', 15, 2)->default(0);
-                $table->decimal('total', 15, 2)->default(0);
-                $table->decimal('paid', 15, 2)->default(0);
-                $table->decimal('due', 15, 2)->default(0);
-                $table->enum('payment_status', ['paid', 'partial', 'unpaid'])->default('unpaid');
-                $table->enum('status', ['pending', 'completed', 'cancelled', 'refunded'])->default('pending');
-                $table->string('payment_method')->nullable();
-                $table->text('notes')->nullable();
-                $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
-                $table->timestamps();
-                $table->softDeletes();
-            });
-        }
-
-        if (! Schema::hasTable('sale_items')) {
-            Schema::create('sale_items', function (Blueprint $table) {
-                $table->id();
-                $table->foreignId('sale_id')->constrained('sales')->cascadeOnDelete();
-                $table->foreignId('product_id')->constrained('products');
-                $table->string('product_name');
-                $table->decimal('quantity', 15, 3);
-                $table->decimal('unit_price', 15, 2);
-                $table->decimal('discount', 15, 2)->default(0);
-                $table->decimal('tax', 15, 2)->default(0);
-                $table->decimal('total', 15, 2);
-                $table->timestamps();
-            });
-        }
-
-        if (! Schema::hasTable('purchases')) {
-            Schema::create('purchases', function (Blueprint $table) {
-                $table->id();
-                $table->foreignId('branch_id')->constrained('branches');
-                $table->foreignId('supplier_id')->nullable()->constrained('suppliers')->nullOnDelete();
-                $table->string('reference_number')->unique();
-                $table->date('purchase_date');
-                $table->decimal('subtotal', 15, 2)->default(0);
-                $table->decimal('discount', 15, 2)->default(0);
-                $table->decimal('tax', 15, 2)->default(0);
-                $table->decimal('shipping', 15, 2)->default(0);
-                $table->decimal('total', 15, 2)->default(0);
-                $table->decimal('paid', 15, 2)->default(0);
-                $table->decimal('due', 15, 2)->default(0);
-                $table->enum('payment_status', ['paid', 'partial', 'unpaid'])->default('unpaid');
-                $table->enum('status', ['pending', 'received', 'cancelled'])->default('pending');
-                $table->text('notes')->nullable();
-                $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
-                $table->timestamps();
-                $table->softDeletes();
-            });
-        }
-
-        if (! Schema::hasTable('purchase_items')) {
-            Schema::create('purchase_items', function (Blueprint $table) {
-                $table->id();
-                $table->foreignId('purchase_id')->constrained('purchases')->cascadeOnDelete();
-                $table->foreignId('product_id')->constrained('products');
-                $table->string('product_name');
-                $table->decimal('quantity', 15, 3);
-                $table->decimal('unit_cost', 15, 2);
-                $table->decimal('total', 15, 2);
-                $table->timestamps();
-            });
-        }
-
-        if (! Schema::hasTable('expense_categories')) {
-            Schema::create('expense_categories', function (Blueprint $table) {
-                $table->id();
-                $table->foreignId('branch_id')->nullable()->constrained('branches')->nullOnDelete();
-                $table->string('name');
-                $table->string('name_ar')->nullable();
-                $table->text('description')->nullable();
-                $table->boolean('is_active')->default(true);
-                $table->timestamps();
-            });
-        }
-
-        if (! Schema::hasTable('expenses')) {
-            Schema::create('expenses', function (Blueprint $table) {
-                $table->id();
-                $table->foreignId('branch_id')->constrained('branches');
-                $table->foreignId('category_id')->nullable()->constrained('expense_categories')->nullOnDelete();
-                $table->string('reference_number')->nullable();
-                $table->date('expense_date');
-                $table->decimal('amount', 15, 2);
-                $table->string('payment_method')->nullable();
-                $table->text('description')->nullable();
-                $table->string('attachment')->nullable();
-                $table->boolean('is_recurring')->default(false);
-                $table->string('recurrence_interval')->nullable();
-                $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
-                $table->timestamps();
-                $table->softDeletes();
-            });
-        }
-
-        if (! Schema::hasTable('income_categories')) {
-            Schema::create('income_categories', function (Blueprint $table) {
-                $table->id();
-                $table->foreignId('branch_id')->nullable()->constrained('branches')->nullOnDelete();
-                $table->string('name');
-                $table->string('name_ar')->nullable();
-                $table->text('description')->nullable();
-                $table->boolean('is_active')->default(true);
-                $table->timestamps();
-            });
-        }
-
-        if (! Schema::hasTable('incomes')) {
-            Schema::create('incomes', function (Blueprint $table) {
-                $table->id();
-                $table->foreignId('branch_id')->constrained('branches');
-                $table->foreignId('category_id')->nullable()->constrained('income_categories')->nullOnDelete();
-                $table->string('reference_number')->nullable();
-                $table->date('income_date');
-                $table->decimal('amount', 15, 2);
-                $table->string('payment_method')->nullable();
-                $table->text('description')->nullable();
-                $table->string('attachment')->nullable();
-                $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
-                $table->timestamps();
-                $table->softDeletes();
-            });
-        }
-
+        // Accounting Foundation Tables (created here, enhanced in 2025_12_07_150000)
         if (! Schema::hasTable('accounts')) {
             Schema::create('accounts', function (Blueprint $table) {
                 $table->id();
@@ -264,21 +98,14 @@ return new class extends Migration
 
     public function down(): void
     {
+        // Drop only the tables created in this migration
         Schema::dropIfExists('journal_entry_lines');
         Schema::dropIfExists('journal_entries');
         Schema::dropIfExists('accounts');
-        Schema::dropIfExists('incomes');
-        Schema::dropIfExists('income_categories');
-        Schema::dropIfExists('expenses');
-        Schema::dropIfExists('expense_categories');
-        Schema::dropIfExists('purchase_items');
-        Schema::dropIfExists('purchases');
-        Schema::dropIfExists('sale_items');
-        Schema::dropIfExists('sales');
-        Schema::dropIfExists('suppliers');
-        Schema::dropIfExists('customers');
         Schema::dropIfExists('module_custom_fields');
         Schema::dropIfExists('module_branch');
-        Schema::dropIfExists('modules');
+        
+        // Note: customers, suppliers, purchases, sales, expenses, incomes
+        // are dropped by their respective original migrations (2025_11_15_*)
     }
 };
