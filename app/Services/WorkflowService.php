@@ -13,6 +13,24 @@ use App\Models\WorkflowNotification;
 use Exception;
 use Illuminate\Support\Facades\DB;
 
+/**
+ * WorkflowService - Multi-stage approval workflow automation
+ * 
+ * STATUS: ACTIVE - Production-ready workflow automation service
+ * PURPOSE: Manage approval workflows for purchases, expenses, and other business processes
+ * FEATURES:
+ *   - Multi-stage approval chains
+ *   - Role-based approver assignment
+ *   - Workflow initiation with rule matching
+ *   - Approval/rejection handling
+ *   - Workflow reassignment and cancellation
+ *   - Comprehensive audit logging
+ *   - Email/system notifications
+ * USAGE: Called by purchase/expense/transaction controllers for approval flows
+ * 
+ * This service is fully implemented and provides enterprise-grade workflow
+ * automation with configurable approval stages and comprehensive audit trails.
+ */
 class WorkflowService
 {
     /**

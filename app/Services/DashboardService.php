@@ -10,6 +10,21 @@ use App\Models\UserDashboardWidget;
 use App\Models\WidgetDataCache;
 use Illuminate\Support\Facades\DB;
 
+/**
+ * DashboardService - Customizable dashboard and widget management
+ * 
+ * STATUS: ACTIVE - Production-ready dashboard service
+ * PURPOSE: Manage user dashboards, widgets, layouts, and widget data generation
+ * FEATURES: 
+ *   - User-customizable dashboard layouts
+ *   - Widget drag-and-drop positioning
+ *   - Real-time widget data generation (sales, inventory, tickets, attendance)
+ *   - Widget caching for performance
+ * USAGE: Called by dashboard controllers/components for dynamic dashboards
+ * 
+ * This service is fully implemented and provides comprehensive dashboard
+ * functionality with 10+ widget types for sales, inventory, HR, and helpdesk modules.
+ */
 class DashboardService
 {
     /**

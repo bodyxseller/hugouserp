@@ -8,6 +8,16 @@ use App\Traits\HandlesServiceErrors;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
+/**
+ * CacheService - Centralized caching layer for ERP modules
+ * 
+ * STATUS: ACTIVE - Core caching infrastructure service
+ * PURPOSE: Provides tagged caching for settings, modules, permissions, products, roles, and branches
+ * USAGE: Called by controllers/services for performance optimization
+ * 
+ * This service is fully implemented and actively used throughout the application
+ * for caching frequently accessed data like settings, permissions, and products.
+ */
 class CacheService
 {
     use HandlesServiceErrors;

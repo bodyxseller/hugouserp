@@ -9,8 +9,15 @@ use App\Models\Product;
 use Illuminate\Support\Facades\DB;
 
 /**
- * Service for handling inventory costing methods
- * Supports FIFO, LIFO, and Weighted Average costing
+ * CostingService - Inventory costing methods (FIFO, LIFO, Weighted Average, Standard)
+ * 
+ * STATUS: ACTIVE - Production-ready inventory costing service
+ * PURPOSE: Calculate inventory costs based on configurable costing methods
+ * METHODS: Supports FIFO, LIFO, Weighted Average, and Standard costing
+ * USAGE: Called by inventory/stock services for cost calculations
+ * 
+ * This service is fully implemented and provides critical inventory valuation
+ * functionality for the ERP system.
  */
 class CostingService
 {
