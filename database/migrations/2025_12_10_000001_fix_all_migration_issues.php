@@ -42,17 +42,12 @@ return new class extends Migration
             });
         }
 
-        // Fix 2: suppliers - Remove status index and add is_active index
+        // Fix 2: suppliers - Remove incorrect status index
+        // Note: The correct index will be added by the performance indexes migration
         if (Schema::hasTable('suppliers')) {
             Schema::table('suppliers', function (Blueprint $table) {
                 // Drop incorrect status index if it exists
                 $this->safeDropIndex('suppliers', 'suppliers_br_status_idx');
-                
-                // Add correct index on is_active
-                if (Schema::hasColumn('suppliers', 'branch_id') && 
-                    Schema::hasColumn('suppliers', 'is_active')) {
-                    $this->safeAddIndex($table, ['branch_id', 'is_active'], 'suppliers_br_active_idx', 'suppliers');
-                }
             });
         }
 
@@ -123,12 +118,7 @@ return new class extends Migration
             });
         }
 
-        // Revert suppliers fixes
-        if (Schema::hasTable('suppliers')) {
-            Schema::table('suppliers', function (Blueprint $table) {
-                $this->safeDropIndex('suppliers', 'suppliers_br_active_idx');
-            });
-        }
+        // Note: suppliers index is managed by the performance indexes migration
 
         // Revert rental_invoices fixes
         if (Schema::hasTable('rental_invoices')) {
